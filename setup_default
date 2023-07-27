@@ -1,0 +1,36 @@
+
+
+export SLTENV_WORK_DIR=$(pwd)
+export SLTENV_CC_PATH="/software/riscv_toolchain/bin/riscv64-unknown-elf-"
+
+
+export SLTENV_UGP_TOOL="ugp3"
+export SLTENV_UGP_TOOL_EXTRACTOR="ugp3-extractor"
+
+export SLTENV_UGP_STATS_FOLDER=${SLTENV_WORK_DIR}/stats/
+export SLTENV_UGP_STATISTIC_FILE=${SLTENV_UGP_STATS_FOLDER}statistics.csv
+export SLTENV_UGP_LOG_FILE=${SLTENV_UGP_STATS_FOLDER}log.txt
+
+
+
+## evaluator 
+export SLTENV_EVALUATOR_SCRIPT=${SLTENV_WORK_DIR}"/gem5/evaluate_pipeline_fullness.sh"
+export SLTENV_GEM5_INSTALLATION_PATH="/software/gem5/build/"
+export SLTENV_ISA="RISCV"
+export SLTENV_VARIANT="opt"
+export SLTENV_RESULTS_DIR=${SLTENV_WORK_DIR}/gem5/results/
+
+## util path from gem5 rep
+export SLTENV_GEM5_SRC="/software/gem5/"
+export SLTENV_GEM5_UTIL=${SLTENV_GEM5_SRC}util/
+export SLT_GEM5_SIMULATION_SCRIPT=${SLTENV_WORK_DIR}"/gem5/riscv_boom.py"
+
+
+
+### EXPORTING gem5 utilities for python
+export PYTHONPATH=$PYTHONPATH:${SLTENV_GEM5_SRC}
+export PYTHONPATH=$PYTHONPATH:${SLTENV_GEM5_SRC}configs/common/
+export PYTHONPATH=$PYTHONPATH:${SLTENV_GEM5_SRC}configs
+export PYTHONPATH=$PYTHONPATH:${SLTENV_GEM5_SRC}src/python
+export PYTHONPATH=$PYTHONPATH:${SLTENV_GEM5_SRC}src/python/m5
+export PYTHONPATH=$PYTHONPATH:${SLTENV_GEM5_SRC}src/sim
