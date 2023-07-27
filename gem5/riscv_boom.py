@@ -56,7 +56,10 @@ from gem5.simulate.simulator import Simulator
 import Options
 import Simulation
 from Caches import L1_ICache, L1_DCache
+from m5.objects import Cache
+from common import SimpleOpts
 
+#from  RiscvCPU  import *
 
 """
 In the following a CPU configuration is created for the simulation.
@@ -79,29 +82,121 @@ You can set the branch predictor using something like:
 
 """
 
+# Some specific options for caches
+# For all options see src/mem/cache/BaseCache.py
+class L1Cache(Cache):
+    """Simple L1 Cache with default values"""
+
+    assoc = 2
+    tag_latency = 2
+    data_latency = 2
+    response_latency = 2
+    mshrs = 4
+    tgts_per_mshr = 20
+
+    def __init__(self, options=None):
+        super(L1Cache, self).__init__()
+        pass
+
+    def connectBus(self, bus):
+        """Connect this cache to a memory-side bus"""
+        self.mem_side = bus.cpu_side_ports
+
+    def connectCPU(self, cpu):
+        """Connect this cache's port to a CPU-side port
+        This must be defined in a subclass"""
+        raise NotImplementedError
+
+
+class L1ICache(L1Cache):
+    """Simple L1 instruction cache with default values"""
+
+    # Set the default size
+    size = "16kB"
+
+    SimpleOpts.add_option(
+        "--l1i_size", help=f"L1 instruction cache size. Default: {size}"
+    )
+
+    def __init__(self, opts=None):
+        super(L1ICache, self).__init__(opts)
+        if not opts or not opts.l1i_size:
+            return
+        self.size = opts.l1i_size
+
+    def connectCPU(self, cpu):
+        """Connect this cache's port to a CPU icache port"""
+        self.cpu_side = cpu.icache_port
+
+
+class L1DCache(L1Cache):
+    """Simple L1 data cache with default values"""
+
+    # Set the default size
+    size = "64kB"
+
+    SimpleOpts.add_option(
+        "--l1d_size", help=f"L1 data cache size. Default: {size}"
+    )
+
+    def __init__(self, opts=None):
+        super(L1DCache, self).__init__(opts)
+        if not opts or not opts.l1d_size:
+            return
+        self.size = opts.l1d_size
+
+    def connectCPU(self, cpu):
+        """Connect this cache's port to a CPU dcache port"""
+        self.cpu_side = cpu.dcache_port
+
+
+class L2Cache(Cache):
+    """Simple L2 Cache with default values"""
+
+    # Default parameters
+    size = "256kB"
+    assoc = 8
+    tag_latency = 20
+    data_latency = 20
+    response_latency = 20
+    mshrs = 20
+    tgts_per_mshr = 12
+
+    SimpleOpts.add_option("--l2_size", help=f"L2 cache size. Default: {size}")
+
+    def __init__(self, opts=None):
+        super(L2Cache, self).__init__()
+        if not opts or not opts.l2_size:
+            return
+        self.size = opts.l2_size
+
+    def connectCPUSideBus(self, bus):
+        self.cpu_side = bus.mem_side_ports
+
+    def connectMemSideBus(self, bus):
+        self.mem_side = bus.cpu_side_ports
+
 
 def create_cpu(options, cpu_id):
-    # DerivO3CPU is the configurable out-of-order CPU model supplied by gem5
-    the_cpu = DerivO3CPU(cpu_id=cpu_id)
-    icache = L1_ICache(size=options.l1i_size, assoc=options.l1i_assoc)
-    dcache = L1_DCache(size=options.l1d_size, assoc=options.l1d_assoc)
+    # from    gem5/src/arch/riscv/RiscvCPU.py
+    # RiscvO3CPU is the configurable out-of-order CPU model supplied by gem5 for RISCV
+    the_cpu = RiscvO3CPU() # it also creates an instance of the RiscvMMU and assign it to the cpu's mmu attribute
+    # it inherits BaseO3CPU   
     ## Constrains stores loads only
     the_cpu.cacheStorePorts = 200
     the_cpu.cacheLoadPorts =200
-
-    # ********************************************************
-    #  -- CHANGE HERE THE CPU CONFIGURATION PARAMETERS --    *
-    # ********************************************************
-    ## possible values "RoundRobin", "Branch", "IQCount", "LSQCount"
+    ## ********************************************************
+    ##  -- CHANGE HERE THE CPU CONFIGURATION PARAMETERS --    *
+    ## ********************************************************
+    ### possible values "RoundRobin", "Branch", "IQCount", "LSQCount"
     the_cpu.smtFetchPolicy="RoundRobin"
     ## possible values "Dynamic", "Partitioned", "Threshold" 
     the_cpu.smtLSQPolicy="Partitioned"
     ## possible values "RoundRobin", "OldestReady"
     the_cpu.smtCommitPolicy ="RoundRobin"
-
     # ****************************
-    # - STAGES DELAY in clock cycles
-    # ****************************
+    ## - STAGES DELAY in clock cycles
+    ## ****************************
     # Decode to fetch delay
     the_cpu.decodeToFetchDelay = 1 
     # Rename to fetch delay
@@ -134,21 +229,17 @@ def create_cpu(options, cpu_id):
     the_cpu.iewToCommitDelay = 1
     # Rename to reorder buffer delay
     the_cpu.renameToROBDelay = 1
-
     the_cpu.trapLatency = 13
     the_cpu.fetchTrapLatency = 1
-
     # **************** ************
     # -- BPU SELECTION
     # ****************************
     # Uncomment only one Branch Predictor at a time!
-
     # LOCAL BP
     # my_predictor = LocalBP()
     # my_predictor.localPredictorSize = 32
     # my_predictor.BTBEntries = 256
     # the_cpu.branchPred = my_predictor
-
     # TOURNAMENT BP
     # my_predictor = TournamentBP()
     # my_predictor.localPredictorSize = 32
@@ -157,21 +248,18 @@ def create_cpu(options, cpu_id):
     # my_predictor.choicePredictorSize = 64
     # my_predictor.BTBEntries = 256
     # the_cpu.branchPred = my_predictor
-
     # BIMODE BP
     # my_predictor = BiModeBP()
     # my_predictor.globalPredictorSize = 64
     # my_predictor.choicePredictorSize = 64
     # my_predictor.BTBEntries = 256
     # the_cpu.branchPred = my_predictor
-
     # LTAGE BP
     my_predictor = LTAGE()
     my_predictor.BTBEntries = 128
     my_predictor.BTBTagSize = 56
     my_predictor.numThreads = 2
     my_predictor.RASSize = 32
-
     # TAGE Parameters
     my_predictor.tage.nHistoryTables = 6
     my_predictor.tage.tagTableTagWidths = [0, 7, 7, 8, 8, 9, 9]
@@ -189,7 +277,6 @@ def create_cpu(options, cpu_id):
     my_predictor.loop_predictor.logSizeLoopPred = 4
     my_predictor.loop_predictor.withLoopBits = 10
     the_cpu.branchPred = my_predictor
-
     # ****************************
     # - FETCH STAGE
     # ****************************
@@ -367,8 +454,12 @@ def create_cpu(options, cpu_id):
     the_cpu.backComSize = 5 
     # Time buffer size for forward communication
     the_cpu.forwardComSize = 5
-    the_cpu[cpu_id].addPrivateSplitL1Caches(icache, dcache, None, None)
-    the_cpu[cpu_id].createInterruptController()
+    ### caches
+    icache = L1ICache(options)
+    dcache = L1DCache(options)
+    the_cpu.icache=icache
+    the_cpu.dcache=dcache 
+    the_cpu.createInterruptController()
     return the_cpu
 
 # run the gem5 simulation
@@ -393,10 +484,6 @@ def run_system_with_cpu(
     # Override the -d outdir --outdir option to gem5
     m5.options.outdir = output_dir
     m5.core.setOutputDir(m5.options.outdir)
-
-    m5.stats.reset()
-    m5.trace.disable()
-
     max_tick = options.abs_max_tick
     if options.rel_max_tick:
         max_tick = options.rel_max_tick
@@ -404,104 +491,107 @@ def run_system_with_cpu(
         max_tick = int(options.maxtime * 1000 * 1000 * 1000 * 1000)
 
     eprint("Simulating until tick=%s" % (max_tick))
+    system = System()
 
-    real_cpus = [real_cpu_create_function(0)]
-    mem_mode = real_cpus[0].memory_mode()
+    system.clk_domain = SrcClockDomain()
+    system.clk_domain.clock = "1GHz"
+    system.clk_domain.voltage_domain = VoltageDomain()
 
-    if warmup_cpu_class:
-        warmup_cpus = [warmup_cpu_class(cpu_id=0)]
-        warmup_cpus[0].max_insts_any_thread = warmup_instructions
-    else:
-        warmup_cpus = real_cpus
-
-    system = System(cpu=warmup_cpus,
-                    mem_mode=mem_mode,
-                    mem_ranges=[AddrRange(start=0x0000000080000000, size=options.mem_size)],
-                    cache_line_size=options.cacheline_size,
-                    physmem=SimpleMemory())
-    system.multi_thread = False
-    system.voltage_domain = VoltageDomain(voltage=options.sys_voltage)
-    system.clk_domain = SrcClockDomain(clock=options.sys_clock,
-                                       voltage_domain=system.voltage_domain)
-    system.cpu_voltage_domain = VoltageDomain()
-    system.cpu_clk_domain = SrcClockDomain(
-        clock=options.cpu_clock,
-        voltage_domain=system.cpu_voltage_domain)
-    system.cache_line_size = options.cacheline_size
-    if warmup_cpu_class:
-        for cpu in real_cpus:
-            cpu.clk_domain = system.cpu_clk_domain
-            cpu.workload = process
-            cpu.system = system
-            cpu.switched_out = True
-            cpu.createThreads()
-        system.switch_cpus = real_cpus
-
-    for cpu in system.cpu:
-        cpu.clk_domain = system.cpu_clk_domain
-        cpu.workload = process
-        if options.prog_interval:
-            cpu.progress_interval = options.prog_interval
-        cpu.createThreads()
-
-    system.workload = SEWorkload.init_compatible(process.executable)
     system.mem_mode = "timing"
-
-    MemClass = Simulation.setMemClass(options)
+    system.mem_ranges = [AddrRange(options.mem_size)]
+    system.cpu = RiscvO3CPU() #create_cpu(options,0)
+    system.cpu.createInterruptController()
     system.membus = SystemXBar()
-    #system.mem_ctrl = MemCtrl()
-    #system.mem_ctrl.dram = DDR3_1600_8x8()
-    #for mem_range in system.mem_ranges:
-    #    system.mem_ctrl.dram.range = mem_range   
-    system.physmem.port = system.membus.mem_side_ports
+    system.mem_ctrl = MemCtrl()
+    system.mem_ctrl.dram = DDR3_1600_8x8()
+    system.mem_ctrl.dram.range = system.mem_ranges[0]
+    system.mem_ctrl.port = system.membus.mem_side_ports
+    ## no caches connections
+    system.cpu.icache_port = system.membus.cpu_side_ports
+    system.cpu.dcache_port = system.membus.cpu_side_ports
+    ## port connections 
     system.system_port = system.membus.cpu_side_ports
-    # connect caches
-    for cpu in system.cpu:
-        cpu.icache.mem_side = system.membus.cpu_side_ports
-        cpu.dcache.mem_side = system.membus.cpu_side_ports
-    ## exit condition for eliminating the boilerplate
-    system.exit_on_work_items=True
-    system.num_work_ids=2
-    system.work_begin_cpu_id_exit=0xc1a0
-    system.work_begin_exit_count=1
-    system.work_end_exit_count=1
+    #system.cpu.icache.connectCPU(system.cpu)
+    #system.cpu.dcache.connectCPU(system.cpu)
+#
+    #### level two cache
+    #system.l2bus = L2XBar()
+    #system.cpu.icache.connectBus(system.l2bus)
+    #system.cpu.dcache.connectBus(system.l2bus)
+    #system.l2cache = L2Cache()
+    #system.l2cache.connectCPUSideBus(system.l2bus)
+    #system.l2cache.connectMemSideBus(system.membus)
+    ##for cpu in system.cpu:    
+    ##    cpu.icache.mem_side = system.membus.cpu_side_ports
+    #    cpu.dcache.mem_side = system.membus.cpu_side_ports
+    binary = "/mnt/d/uni/PoundtheHeadonDesk/ase_riscv_gem5_sim/programs/sanity_test/sanity_test.elf"
+
+    system.workload = RiscvSEWorkload.init_compatible(binary)
+
+    process = Process()
+    process.cmd = [binary]
+    system.cpu.workload = process
+    system.cpu.createThreads()
+
     root = Root(full_system=False, system=system)
-
-    m5.options.outdir = output_dir
-    m5.instantiate(None)  # None == no checkpoint
-    if warmup_cpu_class:
-        eprint("Running warmup with warmup CPU class (%d instrs.)" %
-               (warmup_instructions))
-        max_tick -= m5.curTick()
-        m5.stats.reset()
-        eprint("Finished warmup; running real simulation")
-        m5.switchCpus(system, real_cpus)
-        exit_event = m5.simulate(max_tick)
-        eprint("Done simulation @ tick = %s: %s" %
-               (m5.curTick(), exit_event.getCause()))
-    ## register the trace only for region of interest (ROI)
-    eprint("Starting simulation")
-    m5.trace.enable()
-    exit_event=m5.simulate()
-    ## check in case of exception or wrong code
-    if exit_event.getCause() !=  "workbegin":
-        eprint("Exit ERROR: Done simulation @ tick = %s: %s" %
-               (m5.curTick(), exit_event.getCause()))
-        return exit_event.getCode()
-    eprint("Starting real snippet trace (ROI) @ tick = %s: %s" %
-           (m5.curTick(), exit_event.getCause()))
-    m5.stats.reset()
-    exit_event=m5.simulate()
-    ## check in case of exception or wrong code
-    if exit_event.getCause() !=  "workend":
-        eprint("Exit ERROR: Done simulation @ tick = %s: %s" %
-               (m5.curTick(), exit_event.getCause()))
-        return exit_event.getCode()
-    eprint("Finishing real snippet trace (ROI) @ tick = %s: %s" %
-           (m5.curTick(), exit_event.getCause()))
-    m5.stats.dump()
+    m5.instantiate(None)
+    print("Beginning simulation!")
+    exit_event = m5.simulate()
+    print("Exiting @ tick %i because %s" % (m5.curTick(), exit_event.getCause()))
     return 0
-
+    #real_cpus = [real_cpu_create_function(0)]
+    #mem_mode = real_cpus[0].memory_mode()
+#
+    #if warmup_cpu_class:
+    #    warmup_cpus = [warmup_cpu_class(cpu_id=0)]
+    #    warmup_cpus[0].max_insts_any_thread = warmup_instructions
+    #else:
+    #    warmup_cpus = real_cpus
+#
+    #system = System(cpu=warmup_cpus,
+    #                mem_mode=mem_mode,
+    #                mem_ranges=[AddrRange(start=0x0000000080000000, size=)],
+    #                cache_line_size=options.cacheline_size,
+    #                physmem=SimpleMemory())
+    #system.multi_thread = False
+    #system.voltage_domain = VoltageDomain(voltage=options.sys_voltage)
+    #system.clk_domain = SrcClockDomain(clock=options.sys_clock,
+    #                                   voltage_domain=system.voltage_domain)
+    #system.cpu_voltage_domain = VoltageDomain()
+    #system.cpu_clk_domain = SrcClockDomain(
+    #    clock=options.cpu_clock,
+    #    voltage_domain=system.cpu_voltage_domain)
+    #system.cache_line_size = options.cacheline_size
+    #if warmup_cpu_class:
+    #    for cpu in real_cpus:
+    #        cpu.clk_domain = system.cpu_clk_domain
+    #        cpu.workload = process
+    #        cpu.system = system
+    #        cpu.switched_out = True
+    #        cpu.createThreads()
+    #    system.switch_cpus = real_cpus
+#
+    #for cpu in system.cpu:
+    #    cpu.clk_domain = system.cpu_clk_domain
+    #    cpu.workload = process
+    #    if options.prog_interval:
+    #        cpu.progress_interval = options.prog_interval
+    #    cpu.createThreads()
+#
+    #system.workload = SEWorkload.init_compatible(process.executable)
+    #system.mem_mode = "timing"
+#
+    #MemClass = Simulation.setMemClass(options)
+    #system.membus = SystemXBar()
+    ##system.mem_ctrl = MemCtrl()
+    ##system.mem_ctrl.dram = DDR3_1600_8x8()
+    ##for mem_range in system.mem_ranges:
+    ##    system.mem_ctrl.dram.range = mem_range   
+    #system.physmem.port = system.membus.mem_side_ports
+    #system.system_port = system.membus.cpu_side_ports
+    ## connect caches
+    
+ 
 
 def create_process(options):
     #    process = LiveProcess()
@@ -537,11 +627,8 @@ def get_options():
     parser.set_defaults(
         # Default to writing to program.out in the current working directory
         # below, we cd to the simulation output directory
-        output=os.environ["SLTENV_RESULTS_DIR"]+'/program.out',
-        errout=os.environ["SLTENV_RESULTS_DIR"]+'/program.err',
 
-
-        mem_size=4 * 1024 * 1024,
+        mem_size="8124MB",
         l1i_size="32kB",
         l1i_assoc=8,
         l1d_size="32kB",
@@ -567,12 +654,10 @@ def get_options():
     # removing the assertion will not make the option work.
     assert (not options.smt)
     assert (options.num_cpus == 1)
-#    assert(not options.fastmem)
     assert (not options.standard_switch)
     assert (not options.repeat_switch)
     assert (not options.take_checkpoints)
     assert (not options.fast_forward)
-    #assert (not options.maxinsts)
     assert (not options.l2cache)
 
     return options
