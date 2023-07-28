@@ -1,0 +1,24 @@
+export WORK_DIR=$(pwd)
+
+export CC="/usr/bin/riscv64-linux-gnu-gcc-10"
+export GEM5_INSTALLATION_PATH="/mnt/d/gem5_simulator/build/"
+export GEM5_ISA="RISCV"
+export GEM5_VARIANT="opt"
+export GEM5_SIMULATION_SCRIPT="./gem5/riscv_o3_custom.py"
+
+export RESULTS_DIR=${WORK_DIR}/results/
+
+
+export NATIVE_LINUX=false
+export KONATA="./"
+## util path from gem5 rep
+export GEM5_SRC="/mnt/d/gem5_simulator/gem5/"
+export GEM5_UTIL=${GEM5_SRC}util/
+
+### EXPORTING gem5 utilities for python
+export PYTHONPATH=$PYTHONPATH:${GEM5_SRC}
+export PYTHONPATH=$PYTHONPATH:${GEM5_SRC}configs/common/
+export PYTHONPATH=$PYTHONPATH:${GEM5_SRC}configs
+export PYTHONPATH=$PYTHONPATH:${GEM5_SRC}src/python
+export PYTHONPATH=$PYTHONPATH:${GEM5_SRC}src/python/m5
+export PYTHONPATH=$PYTHONPATH:${GEM5_SRC}src/sim
