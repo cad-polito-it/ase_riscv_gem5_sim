@@ -82,6 +82,101 @@ You can set the branch predictor using something like:
 
 """
 
+# Some specific options for caches
+# For all options see src/mem/cache/BaseCache.py
+class L1Cache(Cache):
+    """Simple L1 Cache with default values"""
+
+    assoc = 2
+    tag_latency = 2
+    data_latency = 2
+    response_latency = 2
+    mshrs = 4
+    tgts_per_mshr = 20
+
+    def __init__(self, options=None):
+        super(L1Cache, self).__init__()
+        pass
+
+    def connectBus(self, bus):
+        """Connect this cache to a memory-side bus"""
+        self.mem_side = bus.cpu_side_ports
+
+    def connectCPU(self, cpu):
+        """Connect this cache's port to a CPU-side port
+        This must be defined in a subclass"""
+        raise NotImplementedError
+
+
+class L1ICache(L1Cache):
+    """Simple L1 instruction cache with default values"""
+
+    # Set the default size
+    size = "16kB"
+
+    SimpleOpts.add_option(
+        "--l1i_size", help=f"L1 instruction cache size. Default: {size}"
+    )
+
+    def __init__(self, opts=None):
+        super(L1ICache, self).__init__(opts)
+        if not opts or not opts.l1i_size:
+            return
+        self.size = opts.l1i_size
+
+    def connectCPU(self, cpu):
+        """Connect this cache's port to a CPU icache port"""
+        self.cpu_side = cpu.icache_port
+
+
+class L1DCache(L1Cache):
+    """Simple L1 data cache with default values"""
+
+    # Set the default size
+    size = "64kB"
+
+    SimpleOpts.add_option(
+        "--l1d_size", help=f"L1 data cache size. Default: {size}"
+    )
+
+    def __init__(self, opts=None):
+        super(L1DCache, self).__init__(opts)
+        if not opts or not opts.l1d_size:
+            return
+        self.size = opts.l1d_size
+
+    def connectCPU(self, cpu):
+        """Connect this cache's port to a CPU dcache port"""
+        self.cpu_side = cpu.dcache_port
+
+
+class L2Cache(Cache):
+    """Simple L2 Cache with default values"""
+
+    # Default parameters
+    size = "256kB"
+    assoc = 8
+    tag_latency = 20
+    data_latency = 20
+    response_latency = 20
+    mshrs = 20
+    tgts_per_mshr = 12
+
+    SimpleOpts.add_option("--l2_size", help=f"L2 cache size. Default: {size}")
+
+    def __init__(self, opts=None):
+        super(L2Cache, self).__init__()
+        if not opts or not opts.l2_size:
+            return
+        self.size = opts.l2_size
+
+    def connectCPUSideBus(self, bus):
+        self.cpu_side = bus.mem_side_ports
+
+    def connectMemSideBus(self, bus):
+        self.mem_side = bus.cpu_side_ports
+
+
 
 # run the gem5 simulation
 def run_simulation(options, process):
@@ -117,30 +212,55 @@ def run_system_with_cpu(
     system.clk_domain = SrcClockDomain()
     system.clk_domain.clock = "1GHz"
     system.clk_domain.voltage_domain = VoltageDomain()
+    system.multi_thread = False
     system.mem_mode = "timing"
     system.mem_ranges = [AddrRange(options.mem_size)]
-    system.cpu = RiscvO3CPU() 
-    system.cpu.createInterruptController()
+    system.cpu = RiscvO3CPU()
     system.cpu.mmu.pma_checker.uncacheable=system.mem_ranges[0]
+    for cpu in system.cpu:
+        cpu.icache = L1ICache(options)
+        cpu.dcache = L1DCache(options)
+        cpu.icache.connectCPU(cpu)
+        cpu.dcache.connectCPU(cpu)
+    
+    # Create a memory bus, a coherent crossbar, in this case
+    system.l2bus = L2XBar()
+
+    # Hook the CPU ports up to the l2bus
+    for cpu in system.cpu:
+        cpu.icache.connectBus(system.l2bus)
+        cpu.dcache.connectBus(system.l2bus)
+
+    # Create an L2 cache and connect it to the l2bus
+    system.l2cache = L2Cache(options)
+    system.l2cache.connectCPUSideBus(system.l2bus)
+
+    # Create a memory bus
     system.membus = SystemXBar()
+
+    # Connect the L2 cache to the membus
+    system.l2cache.connectMemSideBus(system.membus)
+    for cpu in system.cpu:
+        cpu.createInterruptController()
+    # Connect the system up to the membus
+    system.system_port = system.membus.cpu_side_ports
+
+    # Create a DDR3 memory controller
     system.mem_ctrl = MemCtrl()
     system.mem_ctrl.dram = DDR3_1600_8x8()
     system.mem_ctrl.dram.range = system.mem_ranges[0]
     system.mem_ctrl.port = system.membus.mem_side_ports
-    system.cpu.icache_port = system.membus.cpu_side_ports
-    system.cpu.dcache_port = system.membus.cpu_side_ports
-    ## port connections 
-    system.system_port = system.membus.cpu_side_ports
+
     system.workload = RiscvSEWorkload.init_compatible(process.executable)
     system.cpu.workload = process
     system.cpu.createThreads()
+
     root = Root(full_system=False, system=system)
     m5.instantiate(None)
     print("Beginning simulation!")
     exit_event = m5.simulate()
     print("Exiting @ tick %i because %s" % (m5.curTick(), exit_event.getCause()))
     return 0
-  
  
 
 def create_process(options):
