@@ -31,10 +31,10 @@ gem5_options="--debug-flags=O3PipeView,O3CPUAll --debug-file=${RESULTS_DIR}/${pr
 simulation_script_option="--caches  -c ${program_folder}/${program}.elf --directory=${RESULTS_DIR} --output=${RESULTS_DIR}/program.out --errout=${RESULTS_DIR}/programm.err "  
 
 
-echo "${GEM5_INSTALLATION_PATH}/${GEM5_ISA}/gem5.${GEM5_VARIANT} ${gem5_options} ./gem5/riscv_boom.py ${simulation_script_option}" 
-${GEM5_INSTALLATION_PATH}/${GEM5_ISA}/gem5.${GEM5_VARIANT} ${gem5_options} ./gem5/riscv_boom.py ${simulation_script_option}
+echo "${GEM5_INSTALLATION_PATH}/${GEM5_ISA}/gem5.${GEM5_VARIANT} ${gem5_options} ./gem5/riscv_o3_simple.py ${simulation_script_option}" 
+${GEM5_INSTALLATION_PATH}/${GEM5_ISA}/gem5.${GEM5_VARIANT} ${gem5_options} ./gem5/riscv_o3_simple.py ${simulation_script_option}
 
 if ${NATIVE_LINUX}; then 
 ## launch konata ./konata.sh
-# ${KONATA} ${RESULTS_DIR}/${program}/trace.out
+${KONATA} ${RESULTS_DIR}/${program}/trace.out
 fi 
