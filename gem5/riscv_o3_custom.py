@@ -42,7 +42,7 @@ from m5.objects import (
     MemCtrl, DDR3_1600_8x8, Process, Root, SEWorkload, DerivO3CPU
 )
 from m5.objects import *
-from m5.objects.BranchPredictor import LTAGE
+from m5.objects.BranchPredictor import *
 from m5.objects.FUPool import FUPool
 from m5.objects.FuncUnit import OpDesc, FUDesc
 from m5.objects.FuncUnitConfig import (
@@ -59,7 +59,7 @@ from Caches import L1_ICache, L1_DCache
 from m5.objects import Cache
 from common import SimpleOpts
 
-#from  RiscvCPU  import *
+import create_predictor as predictor
 
 """
 In the following a CPU configuration is created for the simulation.
@@ -176,51 +176,6 @@ class L2Cache(Cache):
     def connectMemSideBus(self, bus):
         self.mem_side = bus.cpu_side_ports
 
-def create_predictor():
-    # Uncomment only one Branch Predictor at a time!
-    # LOCAL BP
-    my_predictor = LocalBP()
-    my_predictor.localPredictorSize = 32
-    my_predictor.BTBEntries = 256
-    
-    # TOURNAMENT BP
-    # my_predictor = TournamentBP()
-    # my_predictor.localPredictorSize = 32
-    # my_predictor.localHistoryTableSize = 256
-    # my_predictor.globalPredictorSize = 64
-    # my_predictor.choicePredictorSize = 64
-    # my_predictor.BTBEntries = 256
-    
-    # BIMODE BP
-    # my_predictor = BiModeBP()
-    # my_predictor.globalPredictorSize = 64
-    # my_predictor.choicePredictorSize = 64
-    # my_predictor.BTBEntries = 256
-    
-    # LTAGE BP
-    #my_predictor = LTAGE()
-    #my_predictor.BTBEntries = 128
-    #my_predictor.BTBTagSize = 56
-    #my_predictor.numThreads = 2
-    #my_predictor.RASSize = 32
-    ## TAGE Parameters
-    #my_predictor.tage.nHistoryTables = 6
-    #my_predictor.tage.tagTableTagWidths = [0, 7, 7, 8, 8, 9, 9]
-    #my_predictor.tage.logTagTableSizes = [0, 7, 7, 8, 8, 7, 7]
-    #my_predictor.tage.logUResetPeriod = 11
-    #my_predictor.tage.tagTableCounterBits = 3
-    #my_predictor.tage.tagTableUBits = 2
-    ## Loop parameters
-    #my_predictor.loop_predictor.loopTableTagBits = 10
-    #my_predictor.loop_predictor.loopTableConfidenceBits = 3
-    #my_predictor.loop_predictor.loopTableAgeBits = 3
-    #my_predictor.loop_predictor.initialLoopAge = 5
-    #my_predictor.loop_predictor.logLoopTableAssoc = 4
-    #my_predictor.loop_predictor.loopTableIterBits = 10
-    #my_predictor.loop_predictor.logSizeLoopPred = 4
-    #my_predictor.loop_predictor.withLoopBits = 10
-    return my_predictor
-
 def create_cpu(options, cpu_id):
     ## franout - the current parameters are modelling the Berkeley Out-of-Order Machine (BOOM)
     # from    gem5/src/arch/riscv/RiscvCPU.py
@@ -279,7 +234,9 @@ def create_cpu(options, cpu_id):
     # **************** ************
     # -- BPU SELECTION
     # ****************************
-    the_cpu.branchPred = create_predictor() ##fixme porca troia 
+    # predictors from src/cpu/pred/BranchPredictor.py
+    # see create_prediictors for choose a predictor
+    the_cpu.branchPred = predictor.create_TournamentBP()
     # ****************************
     # - FETCH STAGE
     # ****************************

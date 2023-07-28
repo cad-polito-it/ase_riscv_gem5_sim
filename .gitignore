@@ -52,3 +52,5 @@ Mkfile.old
 dkms.conf
 
 results/
+__pycache__/
+gem5/__pycache__/
