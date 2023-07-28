@@ -179,10 +179,10 @@ class L2Cache(Cache):
 def create_predictor():
     # Uncomment only one Branch Predictor at a time!
     # LOCAL BP
-    # my_predictor = LocalBP()
-    # my_predictor.localPredictorSize = 32
-    # my_predictor.BTBEntries = 256
-    # the_cpu.branchPred = my_predictor
+    my_predictor = LocalBP()
+    my_predictor.localPredictorSize = 32
+    my_predictor.BTBEntries = 256
+    
     # TOURNAMENT BP
     # my_predictor = TournamentBP()
     # my_predictor.localPredictorSize = 32
@@ -190,57 +190,58 @@ def create_predictor():
     # my_predictor.globalPredictorSize = 64
     # my_predictor.choicePredictorSize = 64
     # my_predictor.BTBEntries = 256
-    # the_cpu.branchPred = my_predictor
+    
     # BIMODE BP
     # my_predictor = BiModeBP()
     # my_predictor.globalPredictorSize = 64
     # my_predictor.choicePredictorSize = 64
     # my_predictor.BTBEntries = 256
-    # the_cpu.branchPred = my_predictor
+    
     # LTAGE BP
-    my_predictor = LTAGE()
-    my_predictor.BTBEntries = 128
-    my_predictor.BTBTagSize = 56
-    my_predictor.numThreads = 2
-    my_predictor.RASSize = 32
-    # TAGE Parameters
-    my_predictor.tage.nHistoryTables = 6
-    my_predictor.tage.tagTableTagWidths = [0, 7, 7, 8, 8, 9, 9]
-    my_predictor.tage.logTagTableSizes = [0, 7, 7, 8, 8, 7, 7]
-    my_predictor.tage.logUResetPeriod = 11
-    my_predictor.tage.tagTableCounterBits = 3
-    my_predictor.tage.tagTableUBits = 2
-    # Loop parameters
-    my_predictor.loop_predictor.loopTableTagBits = 10
-    my_predictor.loop_predictor.loopTableConfidenceBits = 3
-    my_predictor.loop_predictor.loopTableAgeBits = 3
-    my_predictor.loop_predictor.initialLoopAge = 5
-    my_predictor.loop_predictor.logLoopTableAssoc = 4
-    my_predictor.loop_predictor.loopTableIterBits = 10
-    my_predictor.loop_predictor.logSizeLoopPred = 4
-    my_predictor.loop_predictor.withLoopBits = 10
+    #my_predictor = LTAGE()
+    #my_predictor.BTBEntries = 128
+    #my_predictor.BTBTagSize = 56
+    #my_predictor.numThreads = 2
+    #my_predictor.RASSize = 32
+    ## TAGE Parameters
+    #my_predictor.tage.nHistoryTables = 6
+    #my_predictor.tage.tagTableTagWidths = [0, 7, 7, 8, 8, 9, 9]
+    #my_predictor.tage.logTagTableSizes = [0, 7, 7, 8, 8, 7, 7]
+    #my_predictor.tage.logUResetPeriod = 11
+    #my_predictor.tage.tagTableCounterBits = 3
+    #my_predictor.tage.tagTableUBits = 2
+    ## Loop parameters
+    #my_predictor.loop_predictor.loopTableTagBits = 10
+    #my_predictor.loop_predictor.loopTableConfidenceBits = 3
+    #my_predictor.loop_predictor.loopTableAgeBits = 3
+    #my_predictor.loop_predictor.initialLoopAge = 5
+    #my_predictor.loop_predictor.logLoopTableAssoc = 4
+    #my_predictor.loop_predictor.loopTableIterBits = 10
+    #my_predictor.loop_predictor.logSizeLoopPred = 4
+    #my_predictor.loop_predictor.withLoopBits = 10
     return my_predictor
 
 def create_cpu(options, cpu_id):
+    ## franout - the current parameters are modelling the Berkeley Out-of-Order Machine (BOOM)
     # from    gem5/src/arch/riscv/RiscvCPU.py
     # RiscvO3CPU is the configurable out-of-order CPU model supplied by gem5 for RISCV
     the_cpu = RiscvO3CPU() # it also creates an instance of the RiscvMMU and assign it to the cpu's mmu attribute
     # it inherits BaseO3CPU   
-    ## Constrains stores loads only
+    # Constrains stores loads only
     the_cpu.cacheStorePorts = 200
     the_cpu.cacheLoadPorts =200
-    ## ********************************************************
-    ##  -- CHANGE HERE THE CPU CONFIGURATION PARAMETERS --    *
-    ## ********************************************************
-    ### possible values "RoundRobin", "Branch", "IQCount", "LSQCount"
+    # ********************************************************
+    #  -- CHANGE HERE THE CPU CONFIGURATION PARAMETERS --    *
+    # ********************************************************
+    # possible values "RoundRobin", "Branch", "IQCount", "LSQCount"
     the_cpu.smtFetchPolicy="RoundRobin"
     ## possible values "Dynamic", "Partitioned", "Threshold" 
     the_cpu.smtLSQPolicy="Partitioned"
     ## possible values "RoundRobin", "OldestReady"
     the_cpu.smtCommitPolicy ="RoundRobin"
     # ****************************
-    ## - STAGES DELAY in clock cycles
-    ## ****************************
+    # - STAGES DELAY in clock cycles
+    # ****************************
     # Decode to fetch delay
     the_cpu.decodeToFetchDelay = 1 
     # Rename to fetch delay
@@ -278,7 +279,7 @@ def create_cpu(options, cpu_id):
     # **************** ************
     # -- BPU SELECTION
     # ****************************
-    the_cpu.branchPred = create_predictor() 
+    the_cpu.branchPred = create_predictor() ##fixme porca troia 
     # ****************************
     # - FETCH STAGE
     # ****************************
@@ -456,13 +457,6 @@ def create_cpu(options, cpu_id):
     the_cpu.backComSize = 5 
     # Time buffer size for forward communication
     the_cpu.forwardComSize = 5
-    ### caches
-    icache = L1ICache(options)
-    dcache = L1DCache(options)
-    the_cpu.icache=icache
-    the_cpu.dcache=dcache 
-    #the_cpu.mmu.connectWalkerPorts(the_cpu.icache_port,the_cpu.dcache.port)
-    the_cpu.createInterruptController()
     return the_cpu
 
 # run the gem5 simulation
@@ -502,7 +496,7 @@ def run_system_with_cpu(
     system.multi_thread = False
     system.mem_mode = "timing"
     system.mem_ranges = [AddrRange(options.mem_size)]
-    system.cpu = RiscvO3CPU()#create_cpu(options,0)
+    system.cpu = create_cpu(options,0)
     system.cpu.mmu.pma_checker.uncacheable=system.mem_ranges[0]
     for cpu in system.cpu:
         cpu.icache = L1ICache(options)

@@ -4,7 +4,10 @@ export CC="/usr/bin/riscv64-linux-gnu-gcc-10"
 export GEM5_INSTALLATION_PATH="/mnt/d/gem5_simulator/build/"
 export GEM5_ISA="RISCV"
 export GEM5_VARIANT="opt"
+export GEM5_SIMULATION_SCRIPT="./gem5/riscv_o3_custom.py"
+
 export RESULTS_DIR=${WORK_DIR}/results/
+
 
 export NATIVE_LINUX=false
 export KONATA="./"
