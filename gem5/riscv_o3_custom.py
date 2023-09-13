@@ -276,7 +276,7 @@ def create_cpu(options, cpu_id):
     # ****************************
     the_cpu.dispatchWidth = 2
     the_cpu.issueWidth = 3
-
+    
     # ****************************
     # - EXECUTE STAGE
     # ****************************
