@@ -2,20 +2,30 @@ export WORK_DIR=$(pwd)
 
 #monviso
 export CC="/software/riscv_toolchain/bin/riscv64-unknown-elf-gcc"
-export GEM5_INSTALLATION_PATH="/software/gem5/build/"
+export GEM5_INSTALLATION_PATH="/software/gem5/build"
 export GEM5_ISA="RISCV"
 export GEM5_VARIANT="opt"
+
+#Select one of this OoO CPU
+
 export GEM5_SIMULATION_SCRIPT="./gem5/riscv_o3_custom.py"
+#export GEM5_SIMULATION_SCRIPT="./gem5/riscv_o3_simple.py"
+#export GEM5_SIMULATION_SCRIPT="./gem5/riscv_o3_two_level_caches.py"
 
-export RESULTS_DIR=${WORK_DIR}/results/
-
+export RESULTS_DIR=${WORK_DIR}/results
 
 
 export NATIVE_LINUX=false
+
+export PATH_KONATA="./konata-gui/konata-linux-x64/"
 export KONATA="./"
 ## util path from gem5 rep
 export GEM5_SRC="/software/gem5/"
 export GEM5_UTIL=${GEM5_SRC}util/
+
+
+# Start debugging from myfunction at PC ??
+export TICKS_START="0"
 
 ### EXPORTING gem5 utilities for python
 export PYTHONPATH=$PYTHONPATH:${GEM5_SRC}
