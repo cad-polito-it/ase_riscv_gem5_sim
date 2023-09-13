@@ -18,10 +18,10 @@ To simulate a program, follow these steps:
 2. Run the `simulate.sh` script with the desired program as an argument:
 
 ```bash
-./simulate.sh programs/sanity\_test/ -nogui
+./simulate.sh programs/sanity_test/ -nogui
 ```
 
-You can specify with -gui or -nogui the automatic opening of the Konata simulation.
+You can specify with `-gui `or `-nogui `the automatic opening of the Konata simulation.
 
 This will produce an ELF (Executable and Linkable Format) file in the `programs/sanity_test/` directory.
 
@@ -31,7 +31,7 @@ To disassemble the ELF file and inspect program counter (PC) and addresses, foll
 
 1. Use the following command to disassemble the ELF file and append the output to a log file (e.g., `log.txt`):
 ```bash
-/software/riscv\_toolchain/bin/riscv64-unknown-elf-objdump -d sanity\_test.elf > log.txt
+/software/riscv\_toolchain/bin/riscv64-unknown-elf-objdump -d sanity_test.elf > log.txt
 ```
 2. Open the `log.txt` file and locate the PC (Program Counter) of the `main` function. Make note of this value.
 
@@ -44,7 +44,7 @@ To set up gem5 to capture a trace from a specific TICK value, follow these steps
 1. Export the TICK value as an environment variable, replacing `"137400"` with the desired TICK value:
 
 ```bash
-export TICKS\_START="137400"
+export TICKS_START="137400"
 ```
 
 2. From this TICK value onward, gem5 will start saving the trace to the `trace.out` file.
