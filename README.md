@@ -1,69 +1,124 @@
-# Konata
+# LABORATORY ON GEM5 - OoO RISC-V CPU
 
-* Konata is an instruction pipeline visualizer for Onikiri2-Kanata/Gem5-O3PipeView formats.
-* ASPLOS 2018 learning gem5 tutorial presentation is [here](https://github.com/shioyadan/Konata/wiki/gem5-konata.pdf
-)
-* The Onikiri2-Kanata format is described in [here](docs/kanata-log-format.md). It can represent a more detailed pipeline behavior than Gem5-O3PipeView.
+# README
 
-![demo](https://github.com/shioyadan/Konata/wiki/images/konata.gif)
+This README provides instructions for simulating a program, disassembling an ELF file, and visualizing the pipeline using gem5 and Konata.
+
+## Downloading Konata
+To download Konata, visit the Konata releases page on GitHub: https://github.com/shioyadan/Konata/releases
+
+Download the appropriate Konata executable for your operating system. Konata is available for various platforms, including Windows, macOS, and Linux.
+
+## Simulating a Program
+
+To simulate a program, follow these steps:
+
+1. Navigate to the project directory.
+
+2. Run the `simulate.sh` script with the desired program as an argument:
+
+```bash
+./simulate.sh programs/sanity\_test/ -nogui
+```
+
+You can specify with -gui or -nogui the automatic opening of the Konata simulation.
+
+This will produce an ELF (Executable and Linkable Format) file in the `programs/sanity_test/` directory.
+
+## Disassembling the ELF File
+
+To disassemble the ELF file and inspect program counter (PC) and addresses, follow these steps:
+
+1. Use the following command to disassemble the ELF file and append the output to a log file (e.g., `log.txt`):
+```bash
+/software/riscv\_toolchain/bin/riscv64-unknown-elf-objdump -d sanity\_test.elf > log.txt
+```
+2. Open the `log.txt` file and locate the PC (Program Counter) of the `main` function. Make note of this value.
+
+3. Search for the corresponding PC value in the `trace.out` file. This will help you find the TICK value associated with the PC.
+
+## Setting up gem5 to Capture Trace
+
+To set up gem5 to capture a trace from a specific TICK value, follow these steps:
+
+1. Export the TICK value as an environment variable, replacing `"137400"` with the desired TICK value:
+
+```bash
+export TICKS\_START="137400"
+```
+
+2. From this TICK value onward, gem5 will start saving the trace to the `trace.out` file.
+
+## Visualizing the Pipeline with Konata
+
+To visualize the pipeline, follow these steps:
+
+1. Load the `trace.out` file onto Konata, a tool for visualizing gem5 traces.
+
+2. Use Konata's interface to visualize and analyze the pipeline behavior of your simulated program.
+
+These instructions should help you simulate, disassemble, and visualize a program's execution using gem5 and Konata.
 
 
-## Installation
-
-There are two ways to launch Konata.
-If you fail to launch a pre-built binary, please try the second way.
-
-1. Extract an archive and launch an executable file (konata.exe or konata).
-    * Pre-built binaries are available from [here](https://github.com/shioyadan/Konata/releases).
-2. Launch from this repository.
-    1. Install node.js from https://nodejs.org
-    2. Clone this repository.
-    3. Launch install.bat (Windows) or install.sh (Linux/MacOS).
-    4. Launch Konata from konata.vbs (Windows) or konata.sh (Linux/MacOS).
 
 
-## Usage
 
-### Basic
 
-1. Generate a trace log from gem5 with the O3 CPU model
-    * Execute gem5 with the following flags
-    * This example is from http://www.m5sim.org/Visualization
-    ```
-    $ ./build/ARM/gem5.opt \
-        --debug-flags=O3PipeView \
-        --debug-start=<first tick of interest> \
-        --debug-file=trace.out \
-        configs/example/se.py \
-        --cpu-type=detailed \
-        --caches -c <path to binary> \
-        -m <last cycle of interest>
-    ```
-2. Load a generated "trace.out" to Konata
-    * from a menu in a window or using drag&drop
-3. If you use ```O3CPUAll``` as well as ```O3PipeView``` as follows, Konata shows more detailed CPU log and visualizes dependency between instructions. 
-    ```
-    --debug-flags=O3PipeView,O3CPUAll
-    ```
 
-### Keyboard
 
-* mouse wheel up, key up: scroll up
-* mouse wheel down, key down: scroll down
-* ctrl + mouse wheel up, key "+", ctrl+key up: zoom in
-* ctrl + mouse wheel down, key "-", ctrl+key down: zoom out
-* ctrl + f, F3, shift+F3: find a string 
-* F1, ctrl+shift+p: open a command palette
 
-### Tips
 
-* If you miss pipelines in a right pane, you can move to pipelines by click "Adjust position" in a right-click menu.
-* You can visually compare two traces as follows:
-    1. Load two trace files
-    2. Right-click and select "Synchronized school" & "Transparent mode"
-    3. Right-click and select a color scheme
-    4. Move to another tab and adjust a position with the transparent mode
-* If you cannot launch Konata, try to install the following runtimes (or try to install the latest Google Chrome, because it uses the same runtimes).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     ```
     sudo apt install \
         libgconf2-4
