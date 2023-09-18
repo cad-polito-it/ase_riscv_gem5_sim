@@ -10,10 +10,10 @@ int main() {
     int result;
 
 
-#ifdef _GEM5_
-    m5_work_begin(0,0);
+#if _GEM5_
+ m5_work_begin(1,1);   
 #endif /*_GEM5_*/
- 
+
     // Inline RISC-V assembly
     asm volatile (
         "add %0, %1, %2\n\t"
@@ -21,9 +21,9 @@ int main() {
         : "r" (x), "r" (y) // Input operands
     );
 
-   // printf("Result: %d\n", result);
+    //printf("Result: %d\n", result);
 #ifdef _GEM5_
-    m5_work_end(0,0);
+    m5_work_end(1,1);
 #endif /*_GEM5_*/
     return 0;
 }

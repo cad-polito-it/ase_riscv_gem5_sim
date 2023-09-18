@@ -499,6 +499,7 @@ def run_system_with_cpu(
     system.work_begin_cpu_id_exit=0xc1a0
     system.work_begin_exit_count=1
     system.work_end_exit_count=1
+    
     root = Root(full_system=False, system=system)
     m5.instantiate(None)
     print("Beginning simulation!")
