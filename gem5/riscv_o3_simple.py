@@ -138,7 +138,23 @@ def run_system_with_cpu(
     m5.instantiate(None)
     print("Beginning simulation!")
     exit_event = m5.simulate()
-    print("Exiting @ tick %i because %s" % (m5.curTick(), exit_event.getCause()))
+    # check in case of exception or wrong code
+    if exit_event.getCause() !=  "workbegin":
+        eprint("Exit ERROR: Done simulation @ tick = %s: %s" %
+               (m5.curTick(), exit_event.getCause()))
+        return exit_event.getCode()
+    eprint("Starting trace in ROI (Region Of Interest) @ tick = %s: %s" %
+           (m5.curTick(), exit_event.getCause()))
+    m5.stats.reset()
+    exit_event=m5.simulate()
+    # check in case of exception or wrong code
+    if exit_event.getCause() !=  "workend":
+        eprint("Exit ERROR: Done simulation @ tick = %s: %s" %
+               (m5.curTick(), exit_event.getCause()))
+        return exit_event.getCode()
+    eprint("Finishing trace in ROI (Region Of Interest) @ tick = %s: %s" %
+           (m5.curTick(), exit_event.getCause()))
+    m5.stats.dump()
     return 0
   
  
