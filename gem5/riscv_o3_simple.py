@@ -134,6 +134,12 @@ def run_system_with_cpu(
     system.workload = RiscvSEWorkload.init_compatible(process.executable)
     system.cpu.workload = process
     system.cpu.createThreads()
+    ## exit condition for region of interest
+    system.exit_on_work_items=True
+    system.num_work_ids=2
+    system.work_begin_cpu_id_exit=0xc1a0
+    system.work_begin_exit_count=1
+    system.work_end_exit_count=1
     root = Root(full_system=False, system=system)
     m5.instantiate(None)
     print("Beginning simulation!")
