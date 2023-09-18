@@ -1,7 +1,7 @@
 # tool macros
 CC ?= gcc
 CXX ?= # FILL: the compiler
-CFLAGS := -O2 -march=rv64gc -mabi=lp64d -static -Wall -Wextra -D_GEM5_ -I$$GEM5_SRC/include -nostartfiles -nostdlib
+CFLAGS := -O2    -static -Wall -Wextra -D_GEM5_ -I$$GEM5_SRC/include -II$$GEM5_SRC/include/gem5/asm/generic -nostartfiles  -nostdlib -T./linker.ld 
 CXXFLAGS := -O2 -static -Wall -Wextra 
 COBJFLAGS := $(CFLAGS) -c
 
@@ -19,8 +19,9 @@ TARGET = $$program.elf
 SRC := $(foreach x, $(SRC_PATH), $(wildcard $(addprefix $(x)/*,.c*)))
 
 ## NOTE: since we are compiling the code with static (otherwise we could use -lm5 for including the static compiled library of m5op )
-ASM = $$GEM5_SRC/util/m5/src/abi/riscv/m5op.S
- 
+## crt0 is the c runtime zero (initialization file)
+ASM = $$GEM5_SRC/util/m5/src/abi/riscv/m5op.S ./crt0.S 
+
 OBJ := $(addprefix $(OBJ_PATH)/, $(addsuffix .o, $(notdir $(basename $(SRC)))))
 
 
