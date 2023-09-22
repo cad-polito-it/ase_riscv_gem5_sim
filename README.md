@@ -37,6 +37,9 @@ To disassemble the ELF file and inspect program counter (PC) and addresses, foll
 
 ## Setting up gem5 to Capture Trace
 
+
+TODO tick not supported anymore 
+TODO add support for roi simulation 
 To set up gem5 to capture a trace from a specific TICK value, follow these steps:
 
 1. Export the TICK value as an environment variable, replacing, for example, `"137400"` with the desired TICK value:
