@@ -1,8 +1,7 @@
 export WORK_DIR=$(pwd)
 
-#monviso
-export CC="/software/riscv_toolchain/bin/riscv64-unknown-elf-gcc"
-export GEM5_INSTALLATION_PATH="/software/gem5/build"
+export CC="/opt/riscv-2023.09.13/bin/riscv64-unknown-linux-gnu-gcc"
+export GEM5_INSTALLATION_PATH="/opt/gem5/build"
 export GEM5_ISA="RISCV"
 export GEM5_VARIANT="opt"
 
@@ -17,7 +16,7 @@ export RESULTS_DIR=${WORK_DIR}/results
 export PATH_KONATA="./konata-gui/konata-linux-x64/"
 
 ## util path from gem5 rep
-export GEM5_SRC="/software/gem5/"
+export GEM5_SRC="/opt/gem5/"
 export GEM5_UTIL=${GEM5_SRC}util/
 
 ### EXPORTING gem5 utilities for python
