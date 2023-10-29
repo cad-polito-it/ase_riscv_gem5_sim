@@ -1,8 +1,8 @@
 # tool macros
 CC ?= gcc
 CXX ?= # FILL: the compiler
-CFLAGS := -O2 -static -Wall -Wextra 
-CXXFLAGS := -O2 -static -Wall -Wextra 
+CFLAGS := $$OPTIMIZATION_FLAGS    -static -Wall -Wextra -D_GEM5_ -I$$GEM5_SRC/include -II$$GEM5_SRC/include/gem5/asm/generic -nostartfiles  -T./linker.ld 
+CXXFLAGS := $$OPTIMIZATION_FLAGS -static -Wall -Wextra 
 COBJFLAGS := $(CFLAGS) -c
 
 # path macros
@@ -17,6 +17,11 @@ endif
 TARGET = $$program.elf
 # src files & obj files
 SRC := $(foreach x, $(SRC_PATH), $(wildcard $(addprefix $(x)/*,.c*)))
+
+## NOTE: since we are compiling the code with static (otherwise we could use -lm5 for including the static compiled library of m5op )
+## crt0 is the c runtime zero (initialization file)
+ASM = $$GEM5_SRC/util/m5/src/abi/riscv/m5op.S ./crt0.S 
+
 OBJ := $(addprefix $(OBJ_PATH)/, $(addsuffix .o, $(notdir $(basename $(SRC)))))
 
 
@@ -30,7 +35,7 @@ default: makedir all
 
 # non-phony targets
 $(TARGET): $(OBJ)
-	$(CC) -o $@ $(OBJ) $(CFLAGS)
+	$(CC) -o $@  -X ${ASM} $(OBJ)  $(CFLAGS) 
 
 $(OBJ_PATH)/%.o: $(SRC_PATH)/%.c*
 	$(CC) $(COBJFLAGS) -o $@ $<
