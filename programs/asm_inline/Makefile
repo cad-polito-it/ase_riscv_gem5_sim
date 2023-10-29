@@ -1,8 +1,8 @@
 # tool macros
 CC ?= gcc
 CXX ?= # FILL: the compiler
-CFLAGS := -O2    -static -Wall -Wextra -D_GEM5_ -I$$GEM5_SRC/include -II$$GEM5_SRC/include/gem5/asm/generic -nostartfiles  -nostdlib -T./linker.ld 
-CXXFLAGS := -O2 -static -Wall -Wextra 
+CFLAGS := $$OPTIMIZATION_FLAGS    -static -Wall -Wextra -D_GEM5_ -I$$GEM5_SRC/include -II$$GEM5_SRC/include/gem5/asm/generic -nostartfiles  -nostdlib -T./linker.ld 
+CXXFLAGS := $$OPTIMIZATION_FLAGS -static -Wall -Wextra 
 COBJFLAGS := $(CFLAGS) -c
 
 # path macros
