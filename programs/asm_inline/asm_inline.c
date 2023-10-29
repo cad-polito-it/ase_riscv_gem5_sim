@@ -5,14 +5,17 @@
 #endif /*_GEM5_*/
 
 int main() {
+
+    
+#if _GEM5_
+ m5_work_begin(1,1);   
+#endif /*_GEM5_*/
+
     int x = 5;
     int y = 10;
     int result;
 
 
-#if _GEM5_
- m5_work_begin(1,1);   
-#endif /*_GEM5_*/
 
     // Inline RISC-V assembly
     asm volatile (
