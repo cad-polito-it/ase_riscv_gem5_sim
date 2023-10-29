@@ -70,6 +70,9 @@ export gui=$2
 
 if [[ ! -d "${RESULTS_DIR}/${program}" ]] ; then 
 mkdir ${RESULTS_DIR}/${program}
+else 
+## clean up 
+rm -f ${RESULTS_DIR}/${program}/*
 fi 
 
 echo "Compiling program ${program}"
