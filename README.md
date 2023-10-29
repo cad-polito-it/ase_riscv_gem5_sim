@@ -1,13 +1,35 @@
-# ASE: SIMULATING AN OoO RISC-V CPU WITH GEM
+# Architetture dei Sistemi di Elaborazione@Politecnico di Torino: SIMULATING AN OoO RISC-V CPU WITH GEM5
 
-This README provides instructions for simulating a program, disassembling an ELF file, and visualizing the pipeline using gem5 and Konata.
+This README provides an environment for simulating a program on a parametrizable RISC-V Out of Order (OoO) CPU and visualize the pipeline. You can see the flow in the Figure below.
+
+
+![flow](./gem5_workflow.png "Simulation flow")
+
+## Setup the environment 
+First of all, you need to clone the repository with the following command, for SSH:
+````
+git clone git@github.com:cad-polito-it/ase_riscv_gem5_sim.git
+``
+For HTTPS
+````
+git clone https://github.com/cad-polito-it/ase_riscv_gem5_sim.git
+``
+
+## Prerequisites
+riscv64-unknown-linux-gnu-gcc
+gem5 
+konata 
+
+
+the seutp default 
+
 
 ## Downloading Konata
 To download Konata, visit the Konata releases page on GitHub: https://github.com/shioyadan/Konata/releases
 
 Download the appropriate Konata executable for your operating system. Konata is available for various platforms, including Windows, macOS, and Linux.
 
-## Simulating a Program
+## HOWTO - Simulating a Program
 
 To simulate a program, follow these steps:
 
@@ -35,7 +57,7 @@ To disassemble the ELF file and inspect program counter (PC) and addresses, foll
 
 3. Search for the corresponding PC value in the `trace.out` file. This will help you find the TICK value associated with the PC.
 
-## Setting up gem5 to Capture Trace
+## HOWTO - Setting up gem5 to Capture Trace
 
 
 TODO tick not supported anymore 
@@ -50,7 +72,7 @@ export TICKS_START="137400"
 
 2. From this TICK value onward, gem5 will start saving the trace to the `trace.out` file.
 
-## Visualizing the Pipeline with Konata
+## HOWTO - Visualizing the Pipeline with Konata
 
 To visualize the pipeline, follow these steps:
 
@@ -61,7 +83,12 @@ To visualize the pipeline, follow these steps:
 These instructions should help you simulate, disassemble, and visualize a program's execution using gem5 and Konata.
 
 
+## Contributors
+- Francesco Angione (francesco.angione@polito.it)
+- Giorgio Insinga (giorgio.insinga@polito.it)
+- Annachiara Ruospo (annachiara.ruospo@polito.it)
 
+## Licensing 
 
 
 
