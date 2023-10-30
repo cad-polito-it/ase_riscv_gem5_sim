@@ -4,7 +4,7 @@ ENTRY("reset_handler")
 STACK_SIZE = 2k ;
 MEMORY
 {
-    ram (airwx) : ORIGIN = 0x80000000, LENGTH = 4M
+    ram (airwx) : ORIGIN = 0x00000000, LENGTH = 4M
 }
 
 
