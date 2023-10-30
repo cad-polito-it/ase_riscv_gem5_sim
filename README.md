@@ -78,7 +78,7 @@ Unzip the release, inside you will find an executable named ```konata``` or ```k
 
 To simulate a program, run the `simulate.sh` script with the desired program as an argument:  
 ```bash
-./simulate.sh ./programs/sanity_test/ -nogui
+./simulate.sh -i ./programs/sanity_test/ -nogui
 ```
 
 You can specify with `-gui `or `-nogui `the automatic opening of the Konata simulation (**for linux users**).
