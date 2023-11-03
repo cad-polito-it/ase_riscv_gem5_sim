@@ -20,9 +20,9 @@ export GEM5_VARIANT="opt"
 
 
 #Select one of this OoO CPU
-#export GEM5_SIMULATION_SCRIPT="./gem5/riscv_o3_custom.py"
+export GEM5_SIMULATION_SCRIPT="./gem5/riscv_o3_custom.py"
 #export GEM5_SIMULATION_SCRIPT="./gem5/riscv_o3_simple.py"
-export GEM5_SIMULATION_SCRIPT="./gem5/riscv_o3_two_level_caches.py"
+#export GEM5_SIMULATION_SCRIPT="./gem5/riscv_o3_two_level_caches.py"
 
 export RESULTS_DIR=${WORK_DIR}/results
 
@@ -42,4 +42,4 @@ export PYTHONPATH=$PYTHONPATH:${GEM5_SRC}src/sim
 ###############################################
 #########   PIPELINE VISUALIZER   #############
 ###############################################
-export PATH_KONATA="./konata-gui/konata-linux-x64/"
+export PATH_KONATA="/usr/bin/"
