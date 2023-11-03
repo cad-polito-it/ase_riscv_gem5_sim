@@ -11,9 +11,9 @@ int main() {
  m5_work_begin(1,1);   
 #endif /*_GEM5_*/
 
-    int x = 5;
-    int y = 10;
-    int result;
+    volatile int x = 5;
+    volatile int y = 10;
+    volatile int result;
 
 
 

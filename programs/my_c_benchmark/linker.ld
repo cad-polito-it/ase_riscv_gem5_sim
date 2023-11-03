@@ -4,7 +4,7 @@ ENTRY("reset_handler")
 STACK_SIZE = 1k ;
 MEMORY
 {
-    ram (airwx) : ORIGIN = 0x00000000, LENGTH = 1M
+    ram (airwx) : ORIGIN = 0x00000000, LENGTH = 4M
 }
 
 
@@ -39,7 +39,7 @@ SECTIONS
     } > ram
 
     .sdata : {
-        _gp = . + STACK_SIZE;
+
         *(.srodata.cst16)
         *(.srodata.cst8)
         *(.srodata.cst4)
@@ -87,6 +87,9 @@ SECTIONS
     /DISCARD/ : {
         *(.eh_frame)
     }
+
+    . = ALIGN(0x40);
+    _gp = . + STACK_SIZE;
 
     _end = .;
 }
