@@ -321,7 +321,7 @@ def get_options():
         # Default to writing to program.out in the current working directory
         # below, we cd to the simulation output directory
 
-        mem_size="1MB",
+        mem_size="8192MB",
         l1i_size="32kB",
         l1i_assoc=8,
         l1d_size="32kB",
