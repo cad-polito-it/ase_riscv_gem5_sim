@@ -38,7 +38,7 @@ fi
 shift
 ;;
 -gui)
-gui="-nogui"
+gui="-gui"
 shift 
 ;;
 -nogui)
@@ -66,7 +66,7 @@ export program_folder
 export program=$(basename ${program_folder})
 echo "Simulating ${program}"
 
-export gui=$2
+export gui
 
 if [[ ! -d "${RESULTS_DIR}/${program}" ]] ; then 
 mkdir ${RESULTS_DIR}/${program}
@@ -100,9 +100,10 @@ echo "${GEM5_INSTALLATION_PATH}/${GEM5_ISA}/gem5.${GEM5_VARIANT} ${gem5_options}
 ${GEM5_INSTALLATION_PATH}/${GEM5_ISA}/gem5.${GEM5_VARIANT} ${gem5_options} ${GEM5_SIMULATION_SCRIPT} ${simulation_script_option}
 
 # Launch Konata 
-if [[ ${OSTYPE}=="linux-gnu" ]] ; then 
-if [[ ${gui} == "-gui"  ]] ; then
-	${PATH_KONATA}konata  ${RESULTS_DIR}/${program}/trace.out &
+if [[ "${OSTYPE}" == "linux-gnu" ]] ; then 
+if [[ "${gui}" == "-gui"  ]] ; then
+	echo "${PATH_KONATA}konata  ${RESULTS_DIR}/${program}/trace.out "
+	${PATH_KONATA}konata  ${RESULTS_DIR}/${program}/trace.out &2> /dev/null
 fi
 else 
 echo "Warning! Konata cannot be launched (easily) from WSL"
