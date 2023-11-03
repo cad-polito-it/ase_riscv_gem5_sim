@@ -1,10 +1,10 @@
 OUTPUT_ARCH("riscv")
 ENTRY("reset_handler")
 
-STACK_SIZE = 2k ;
+STACK_SIZE = 1k ;
 MEMORY
 {
-    ram (airwx) : ORIGIN = 0x00000000, LENGTH = 4M
+    ram (airwx) : ORIGIN = 0x00000000, LENGTH = 1M
 }
 
 

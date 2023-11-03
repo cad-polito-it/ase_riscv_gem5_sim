@@ -1,4 +1,4 @@
-//#include <stdio.h>
+#include <stdio.h>
 
 #ifdef _GEM5_
 #include <gem5/m5ops.h>
