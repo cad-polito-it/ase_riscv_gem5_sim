@@ -127,6 +127,8 @@ To visualize the pipeline, follow these steps:
 
 2. Use Konata's interface to visualize and analyze the pipeline behavior of your simulated program.
 
+**Note** For linux-based users you can directly launch the pipeline visualizer with the option ```-gui``` option in simulate script
+
 ## Contributors
 - Francesco Angione (francesco.angione@polito.it)
 - Giorgio Insinga (giorgio.insinga@polito.it)

@@ -1,7 +1,7 @@
 # tool macros
 CC ?= gcc
 CXX ?= # FILL: the compiler
-CFLAGS :=  $$OPTIMIZATION_FLAGS  -march=rv64gc -mabi=lp64d  -static -Wall -Wextra -D_GEM5_ -I$$GEM5_SRC/include -II$$GEM5_SRC/include/gem5/asm/generic -nostartfiles -lc -L$$CC_INSTALLATION_PATH -T./linker.ld 
+CFLAGS :=  $$OPTIMIZATION_FLAGS  -march=rv64g -mabi=lp64d  -static -Wall -Wextra -D_GEM5_ -I$$GEM5_SRC/include -II$$GEM5_SRC/include/gem5/asm/generic -nostartfiles  -T./linker.ld  -lc -L$$CC_INSTALLATION_PATH/lib
 CXXFLAGS := $$OPTIMIZATION_FLAGS -static -Wall -Wextra 
 COBJFLAGS := $(CFLAGS) -c
 
