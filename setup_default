@@ -1,23 +1,34 @@
 export WORK_DIR=$(pwd)
 
-export CC="/opt/riscv-2023.09.13/bin/riscv64-unknown-linux-gnu-gcc"
+## Attention: default are LABING paths
+
+###############################################
+#########   CROSS COMPILER RISCV  #############
+###############################################
+export CC="/opt/riscv-2023.10.18/bin/riscv64-unknown-elf-gcc"
+export CC_INSTALLATION_PATH="/opt/riscv-2023.10.18/"
+## optimization flags for the compiler 
+export OPTIMIZATION_FLAGS="-O0 "
+
+###############################################
+######### ARCHITECTURAL SIMULATOR #############
+###############################################
+
 export GEM5_INSTALLATION_PATH="/opt/gem5/build"
 export GEM5_ISA="RISCV"
 export GEM5_VARIANT="opt"
 
-#Select one of this OoO CPU
 
-#export GEM5_SIMULATION_SCRIPT="./gem5/riscv_o3_custom.py"
+#Select one of this OoO CPU
+export GEM5_SIMULATION_SCRIPT="./gem5/riscv_o3_custom.py"
 #export GEM5_SIMULATION_SCRIPT="./gem5/riscv_o3_simple.py"
-export GEM5_SIMULATION_SCRIPT="./gem5/riscv_o3_two_level_caches.py"
+#export GEM5_SIMULATION_SCRIPT="./gem5/riscv_o3_two_level_caches.py"
 
 export RESULTS_DIR=${WORK_DIR}/results
 
-export PATH_KONATA="./konata-gui/konata-linux-x64/"
-
 ## util path from gem5 rep
 export GEM5_SRC="/opt/gem5/"
-export GEM5_UTIL=${GEM5_SRC}util/
+export GEM5_UTIL=${GEM5_SRC}/util/
 
 ### EXPORTING gem5 utilities for python
 export PYTHONPATH=$PYTHONPATH:${GEM5_SRC}
@@ -26,3 +37,9 @@ export PYTHONPATH=$PYTHONPATH:${GEM5_SRC}configs
 export PYTHONPATH=$PYTHONPATH:${GEM5_SRC}src/python
 export PYTHONPATH=$PYTHONPATH:${GEM5_SRC}src/python/m5
 export PYTHONPATH=$PYTHONPATH:${GEM5_SRC}src/sim
+
+
+###############################################
+#########   PIPELINE VISUALIZER   #############
+###############################################
+export PATH_KONATA="/usr/bin/"
