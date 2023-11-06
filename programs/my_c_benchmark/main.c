@@ -51,7 +51,6 @@ int main() {
  *****      End Region of Interest (ROI)         ********
 ********************************************************/
 #ifdef _GEM5_
-    for(i=0; i<100; i++);
     m5_work_end(1,1);
 #endif /*_GEM5_*/
     return 0;
