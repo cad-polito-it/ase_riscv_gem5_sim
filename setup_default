@@ -6,7 +6,7 @@ export WORK_DIR=$(pwd)
 #########   CROSS COMPILER RISCV  #############
 ###############################################
 export CC="/opt/riscv-2023.09.13/bin/riscv64-unknown-linux-gnu-gcc"
-
+export CC_INSTALLATION_PATH="/opt/riscv-2023.09.13/"
 ## optimization flags for the compiler 
 export OPTIMIZATION_FLAGS="-O0 "
 
