@@ -1,12 +1,15 @@
-#include <stdio.h>
+#ifdef _GEM5_
+#include <gem5/m5ops.h>
+#endif /*_GEM5_*/
+
 
 int main() {
-    float n = 5.0, first = 0, second = 1, next;
 
-   // printf("Enter the number of terms: ");
-   // scanf("%f", &n);
+#if _GEM5_
+m5_work_begin(1,1);   
+#endif /*_GEM5_*/
 
-   // printf("Fibonacci Series:\n");
+   volatile int n = 5, first = 0, second = 1, next;
 
     for (int i = 0; i < n; i++) {
         if (i <= 1)
@@ -16,8 +19,10 @@ int main() {
             first = second;
             second = next;
         }
-        printf("%f ", next);
     }
+#ifdef _GEM5_
+    m5_work_end(1,1);
+#endif /*_GEM5_*/
 
     return 0;
 }

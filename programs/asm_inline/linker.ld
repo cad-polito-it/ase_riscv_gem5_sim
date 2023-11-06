@@ -1,34 +1,34 @@
 OUTPUT_ARCH("riscv")
 ENTRY("reset_handler")
 
-STACK_SIZE = 2k ;
+STACK_SIZE = 1k ;
 MEMORY
 {
-    testram (airwx) : ORIGIN = 0x80000000, LENGTH = 4M
+    ram (airwx) : ORIGIN = 0x80000000, LENGTH = 1M
 }
 
 
 
 SECTIONS
 {
-    . = ORIGIN(testram);
+    . = ORIGIN(ram);
     .text : {
         KEEP(*(.text))
-    } > testram
+    } > ram
     . = ALIGN(0x1000);
 
     .tohost : {
         *(.tohost)
-    } > testram
+    } > ram
     . = ALIGN(0x1000);
 
     .init : {
         KEEP (*(.init))
-    } > testram
+    } > ram
 
     .fini : {
         KEEP (*(.fini))
-    } > testram
+    } > ram
 
     .sbss ALIGN(4) : {
         __sbss_start = .;
@@ -36,17 +36,17 @@ SECTIONS
         *(.sbss.*)
         *(.gnu.linkonce.sb.*)
         __sbss_end = .;
-    } > testram
+    } > ram
 
     .sdata : {
-        _gp = . + STACK_SIZE;
         *(.srodata.cst16)
         *(.srodata.cst8)
         *(.srodata.cst4)
         *(.srodata.cst2)
         *(.srodata*)
         *(.sdata .sdata.* .gnu.linkonce.s.*)
-    } > testram
+        _gp = . + STACK_SIZE;
+    } > ram
 
     .data ALIGN(4) : {
         __data_start = .;
@@ -54,7 +54,7 @@ SECTIONS
         *(.data.*)
         *(.gnu.linkonce.d.*)
         __data_end = .;
-    } > testram
+    } > ram
 
     .bss ALIGN(4) : {
         _bss_start = . ;
@@ -62,19 +62,19 @@ SECTIONS
         *(COMMON)
         . = ALIGN(4);
         _bss_end = . ;
-    } > testram
+    } > ram
 
     .tdata : {
         __tdata_begin = .;
         *(.tdata)
         __tdata_end = .;
-    } > testram
+    } > ram
 
     .tbss : {
         __tbss_start = .;
         *(.tbss)
         __tbss_end = .;
-    } > testram
+    } > ram
 
     .rodata : {
         __rodata_start = .;
@@ -82,7 +82,7 @@ SECTIONS
         *(.rodata.*)
         *(.gnu.linkonce.r.*)
         __rodata_end = .;
-    } > testram
+    } > ram
 
     /DISCARD/ : {
         *(.eh_frame)

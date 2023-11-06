@@ -58,6 +58,7 @@ import Simulation
 from Caches import L1_ICache, L1_DCache
 from m5.objects import Cache
 from common import SimpleOpts
+from m5 import trace
 
 #from  RiscvCPU  import *
 
@@ -105,6 +106,7 @@ def run_system_with_cpu(
     # Override the -d outdir --outdir option to gem5
     m5.options.outdir = output_dir
     m5.core.setOutputDir(m5.options.outdir)
+    m5.trace.disable()
     max_tick = options.abs_max_tick
     if options.rel_max_tick:
         max_tick = options.rel_max_tick
@@ -152,6 +154,7 @@ def run_system_with_cpu(
     eprint("Starting trace in ROI (Region Of Interest) @ tick = %s: %s" %
            (m5.curTick(), exit_event.getCause()))
     m5.stats.reset()
+    m5.trace.enable()
     exit_event=m5.simulate()
     # check in case of exception or wrong code
     if exit_event.getCause() !=  "workend":
@@ -200,7 +203,7 @@ def get_options():
         # Default to writing to program.out in the current working directory
         # below, we cd to the simulation output directory
 
-        mem_size="1MB",
+        mem_size="8192MB",
         l1i_size="32kB",
         l1i_assoc=8,
         l1d_size="32kB",
