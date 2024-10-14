@@ -103,7 +103,7 @@ ${GEM5_INSTALLATION_PATH}/${GEM5_ISA}/gem5.${GEM5_VARIANT} ${gem5_options} ${GEM
 if [[ "${OSTYPE}" == "linux-gnu" ]] ; then 
 if [[ "${gui}" == "-gui"  ]] ; then
 	echo "${PATH_KONATA}konata  ${RESULTS_DIR}/${program}/trace.out "
-	${PATH_KONATA}konata  ${RESULTS_DIR}/${program}/trace.out &2> /dev/null
+	${PATH_KONATA}konata  ${RESULTS_DIR}/${program}/trace.out 2> /dev/null
 fi
 else 
 echo "Warning! Konata cannot be launched (easily) from WSL"
