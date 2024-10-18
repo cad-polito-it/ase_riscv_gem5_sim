@@ -26,6 +26,12 @@ export GEM5_SIMULATION_SCRIPT="./gem5/riscv_o3_custom.py"
 
 export RESULTS_DIR=${WORK_DIR}/results
 
+
+if [[ ! -d  "${RESULTS_DIR}" ]] ; then 
+echo "Creating ${RESULTS_DIR}"
+mkdir ${RESULTS_DIR} 
+fi 
+
 ## util path from gem5 rep
 export GEM5_SRC="/opt/gem5/"
 export GEM5_UTIL=${GEM5_SRC}/util/
