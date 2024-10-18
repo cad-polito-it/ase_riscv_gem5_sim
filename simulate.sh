@@ -82,6 +82,11 @@ if [[ -f "Makefile" ]] ; then
 # if recipe for compiling the program exists
 make clean 
 make 
+
+if [[ $? -ne 0 ]] ; then 
+	echo "Compilation error"
+	exit 1
+fi 
 fi 
 cd ${WORK_DIR}
 
