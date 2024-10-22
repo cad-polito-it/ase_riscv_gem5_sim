@@ -64,6 +64,11 @@ Just remember that you need the following Gem5 characteristics to install:
 
 **Be aware:** the Gem5 compilation is very, very, very (did i already say very?!) time consuming.
 
+You need to install a specific version of gem5:
+```bash
+git clone https://github.com/gem5/gem5.git && cd gem5
+git checkout v22.1.0.0
+```
 
 ### Installing Konata, the Pipeline Visualizer
 To download Konata, visit the Konata github pages @ https://github.com/shioyadan/Konata/releases
