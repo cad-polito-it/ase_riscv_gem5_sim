@@ -40,7 +40,7 @@ def create_TournamentBP():
     pred.localHistoryTableSize = 256
     pred.globalPredictorSize = 64
     pred.choicePredictorSize = 64
-    pred.BTBEntries = 256
+    # pred.BTBEntries = 256  # Removed as TournamentBP does not have BTBEntries
     pred.localPredictorSize = 2048 # Size of local predictor
     pred.localCtrBits = 2 # Bits per counter
     pred.localHistoryTableSize = 2048 # size of local history table
