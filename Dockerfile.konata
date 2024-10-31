@@ -1,0 +1,38 @@
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install necessary dependencies
+RUN apt-get update && apt-get install -y \
+    libgconf-2-4 \
+    libgtk-3-0 \
+    libxss1 \
+    libnss3 \
+    libasound2 \
+    libx11-xcb1 \
+    libcanberra-gtk3-module \
+    libgbm-dev \
+    curl \
+    git \
+    make
+
+# Install Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt-get install -y nodejs
+
+# Clone the Konata repository
+RUN git clone https://github.com/shioyadan/Konata.git /opt/konata
+
+# Change working directory
+WORKDIR /opt/konata
+
+# Make the installation script executable
+RUN chmod +x install.sh konata.sh
+# Run the installation script
+RUN ./install.sh
+
+# Create a directory for results
+RUN mkdir -p /opt/konata/results
+
+# Default entrypoint to run Konata with --no-sandbox flag
+CMD ["./konata.sh", "--no-sandbox"]

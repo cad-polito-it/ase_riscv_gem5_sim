@@ -1,0 +1,22 @@
+services:
+  konata:
+    build:
+        context: .
+        dockerfile: Dockerfile.konata
+    environment:
+      - DISPLAY=host.docker.internal:0
+    volumes:
+      # - /tmp/.X11-unix:/tmp/.X11-unix  # Share the X11 socket
+      - ./results:/opt/konata/results    # Mount results directory
+    image: ezmi2345/konata:latest
+
+  riscv:
+    build:
+      context: .
+      dockerfile: Dockerfile.riscv
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace  # Mount workspace directory
+    image: ezmi2345/riscv:latest
+    tty: true
+    stdin_open: true
