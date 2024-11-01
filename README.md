@@ -15,9 +15,11 @@ This README provides an environment for simulating a program on a parametrizable
     - [Installing Konata, the Pipeline Visualizer](#installing-konata-the-pipeline-visualizer)
   - [HOWTO - Simulate a Program](#howto---simulate-a-program)
   - [HOWTO - Visualize the Pipeline with Konata](#howto---visualize-the-pipeline-with-konata)
+  - [Installation with Docker](#installation-with-docker)
   - [Contributors](#contributors)
 
 ## Setup the environment 
+You can easily install the environment following the [installation with docker ](#installation-with-docker) or manually following the steps below.
 First of all, you need to clone the repository with the following command, for SSH:
 ```
 git clone git@github.com:cad-polito-it/ase_riscv_gem5_sim.git
@@ -134,10 +136,46 @@ To visualize the pipeline, follow these steps:
 
 **Note** For linux-based users you can directly launch the pipeline visualizer with the option ```-gui``` option in simulate script
 
+---
+## Installation with Docker
+
+### Prerequisites
+- [Docker](https://docs.docker.com/get-docker/)
+- A display server to attach to the `konata` container. For macOS, it is recommended to use [XQuartz](https://gist.github.com/sorny/969fe55d85c9b0035b0109a31cbcb088).
+
+### Starting the Environment
+To start the Docker environment, use:
+```bash
+docker compose up -d
+```
+
+### Usage
+The setup includes the gem5 simulator and a RISC-V cross-compiler within the `riscv` container. You can attach to this container and run simulations as needed. Simulation results are saved in the `results` directory, and you can view the generated `.out` files using the Konata visualization tool.
+
+Konata is available in the `konata` container and can be run independently from the gem5 simulation.
+
+### Running the RISC-V Cross-Compiler
+To run a program using the cross-compiler and gem5, execute:
+```bash
+docker exec -it ase_riscv_gem5_sim-riscv-1 bash -c "./simulate.sh -i ./programs/fibonacci/ -nogui"
+```
+
+### Using Konata
+Konata is used to open and visualize `.out` files generated in the `results` folder. Before starting the container:
+1. Ensure your display server is running.
+2. Set the `DISPLAY` environment variable correctly in the `docker-compose.yml` file to allow graphical output.
+
+### Stopping the Environment
+To stop the Docker environment, run:
+```bash
+docker compose down
+```
+---
 ## Contributors
 - Francesco Angione (francesco.angione@polito.it)
 - Giorgio Insinga (giorgio.insinga@polito.it)
 - Annachiara Ruospo (annachiara.ruospo@polito.it)
+- Ezmiron Deniku (s333461@studenti.polito.it)
 
 
 
