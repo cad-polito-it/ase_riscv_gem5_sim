@@ -43,8 +43,11 @@ RUN apt-get update && \
     libslirp-dev && \
     rm -rf /var/lib/apt/lists/*
 
-# Clone and build the RISC-V GNU Toolchain
-RUN git clone https://github.com/riscv-collab/riscv-gnu-toolchain /opt/riscv-gnu-toolchain
+# Clone the RISC-V GNU Toolchain
+RUN git clone --recursive https://github.com/riscv-collab/riscv-gnu-toolchain /opt/riscv-gnu-toolchain
+
+# Clone gem5
+RUN git clone --recursive https://github.com/gem5/gem5 /opt/gem5
 
 # Build the 64-bit RV64GC toolchain with glibc
 RUN cd /opt/riscv-gnu-toolchain && ./configure --prefix=/opt/riscv
@@ -53,9 +56,6 @@ RUN cd /opt/riscv-gnu-toolchain && make -j 10
 
 # Add RISC-V toolchain to PATH
 ENV PATH="/opt/riscv/bin:${PATH}"
-
-# Clone gem5
-RUN git clone https://github.com/gem5/gem5 /opt/gem5
 
 # Set arguments for gem5 ISA, variant, and job count
 ARG ISA="RISCV"
