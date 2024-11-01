@@ -5,8 +5,13 @@ export WORK_DIR=$(pwd)
 ###############################################
 #########   CROSS COMPILER RISCV  #############
 ###############################################
-export CC="/opt/riscv/bin/riscv64-unknown-elf-gcc"
-export CC_INSTALLATION_PATH="/opt/riscv/"
+if [[ -n "$IS_DOCKER" ]]; then
+    export CC="/opt/riscv/bin/riscv64-unknown-elf-gcc"
+    export CC_INSTALLATION_PATH="/opt/riscv/"
+else
+    export CC="/opt/riscv-2023.10.18/bin/riscv64-unknown-elf-gcc"
+    export CC_INSTALLATION_PATH="/opt/riscv-2023.10.18/"
+fi
 ## optimization flags for the compiler 
 export OPTIMIZATION_FLAGS="-O0 "
 

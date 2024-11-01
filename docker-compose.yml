@@ -14,6 +14,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.riscv
+    environment:
+      - IS_DOCKER=true
     working_dir: /workspace
     volumes:
       - ./:/workspace  # Mount workspace directory

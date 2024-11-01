@@ -1,4 +1,5 @@
 from m5.objects.BranchPredictor import *
+import os
 
 def create_IndirectPredictor():
     return IndirectPredictor()
@@ -14,7 +15,7 @@ def create_SimpleIndirectPredictor():
     pred.indirectGHRBits = 13 # Indirect GHR number of bits
     pred.instShiftAmt = 2 # Number of bits to shift instructions by
     return pred
-    
+
 def create_BranchPredictor():
     pred=BranchPredictor()
     pred.BTBEntries = 4096 # Number of BTB entries
@@ -29,18 +30,19 @@ def create_LocalBP():
     # LOCAL BP it inherits BranchPredictor (therefore you can also set those parameters)
     pred = LocalBP()
     pred.localPredictorSize = 32
-    pred.localCtrBits = 2 
+    pred.localCtrBits = 2
     pred.BTBEntries = 256
     return pred
 
 def create_TournamentBP():
-    # TOURNAMENT BP it inherits BranchPredictor 
+    # TOURNAMENT BP it inherits BranchPredictor
     pred = TournamentBP()
     pred.localPredictorSize = 32
     pred.localHistoryTableSize = 256
     pred.globalPredictorSize = 64
     pred.choicePredictorSize = 64
-    # pred.BTBEntries = 256  # Removed as TournamentBP does not have BTBEntries
+    if os.getenv('IS_DOCKER') != 'true':
+        pred.BTBEntries = 256
     pred.localPredictorSize = 2048 # Size of local predictor
     pred.localCtrBits = 2 # Bits per counter
     pred.localHistoryTableSize = 2048 # size of local history table
