@@ -1,0 +1,9 @@
+services:
+  riscv:
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace  # Mount workspace directory
+    image: ezmi2345/riscv:22.1.0.0
+    container_name: riscv
+    tty: true
+    stdin_open: true
