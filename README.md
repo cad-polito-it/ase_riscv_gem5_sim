@@ -12,6 +12,7 @@ This README provides an environment for simulating a program on a parametrizable
     - [Prerequisites](#prerequisites)
     - [Installing a Risc-V toolchain, the cross-compiler](#installing-a-risc-v-toolchain-the-cross-compiler)
     - [Installing Gem5, the Architectural Simulator](#installing-gem5-the-architectural-simulator)
+    - [Installation with Docker](#installation-with-docker)
     - [Installing Konata, the Pipeline Visualizer](#installing-konata-the-pipeline-visualizer)
   - [HOWTO - Simulate a Program](#howto---simulate-a-program)
   - [HOWTO - Visualize the Pipeline with Konata](#howto---visualize-the-pipeline-with-konata)
@@ -34,7 +35,7 @@ In order to simulate a benchmark, you need the following three tools:
 - A pipeline visualizer
 
 Installation guidelines are provided for each of the aforementioned tools.
-In case you are using LABINF PCs, you can skip the installation part (Be aware, tools' compilation is time consuming!).
+In case you are using LABINF PCs, you can skip the installation part (Be aware, tools' compilation is time consuming!) or you can easily install the Risc-V cross compiler and the architectural simulator following the [installation with docker ](#installation-with-docker).
 
 An important file for the simulation flow is the [```setup_default```](./setup_default).
 In this file you need to specify you installation paths for different tools.
@@ -69,6 +70,50 @@ You need to install a specific version of gem5:
 git clone https://github.com/gem5/gem5.git && cd gem5
 git checkout v22.1.0.0
 ```
+
+### Installation with Docker
+To simplify the installation process, you can use Docker to create a containerized environment with the necessary tools. Otherwise, if you are following the installation guidelines for each tool separately, you can skip to the [next section](#installing-konata-the-pipeline-visualizer).
+#### Prerequisites
+- [Docker](https://docs.docker.com/get-docker/)
+
+#### Usage
+The setup includes the gem5 simulator and a RISC-V cross-compiler within the `riscv` container. You can attach to this container and run simulations as needed. Simulation results are saved in the `results` directory, and you can view the generated `.out` files using the Konata visualization tool.
+
+#### Installation
+To start the Docker environment, you need to check out to the docker-support branch:
+```bash
+git checkout docker-support
+```
+#### Starting the Environment
+To start the Docker environment, use:
+```bash
+docker compose up -d
+```
+
+#### Attaching to the Container
+To attach to the container, use:
+```bash
+docker exec -it riscv /bin/bash
+```
+
+#### Running Simulations
+To run simulations, use the `simulate.sh` script:
+```bash
+./simulate.sh -i ./programs/fibonacci/ -nogui
+```
+
+#### Exiting the Container and Stopping the Environment
+To exit the container, use:
+```bash
+exit
+```
+
+To stop the Docker environment, use:
+```bash
+docker compose down
+```
+
+Now you can visualize the pipeline using Konata.
 
 ### Installing Konata, the Pipeline Visualizer
 To download Konata, visit the Konata github pages @ https://github.com/shioyadan/Konata/releases
