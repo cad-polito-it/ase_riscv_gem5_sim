@@ -51,4 +51,4 @@ export PYTHONPATH=$PYTHONPATH:${GEM5_SRC}src/sim
 ###############################################
 #########   PIPELINE VISUALIZER   #############
 ###############################################
-export PIPELINE_VISUALIZER="/mnt/d/uni/PoundtheHeadonDesk/ase_riscv_gem5_sim/Gem5_Pipeline_Visualizer-x86_64.AppImage"
+export PIPELINE_VISUALIZER="/mnt/d/uni/PoundtheHeadonDesk/ase_riscv_gem5_sim/tools/gem5_visualizer/build/gem5_pipeline_visualizer"

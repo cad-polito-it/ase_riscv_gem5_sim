@@ -55,7 +55,9 @@ In the repository, you can find a script named [```installation.sh```](./utils/i
 ```bash
 $ ./utils/installation.sh
 ```
-It will install the cross-compiler and gem5 in the ```./tools/``` folder. Remember to update the ```setup_default``` file with the correct paths.
+It will install the cross-compiler, gem5 and the pipeline visualizer in a default folder  named ```./tools/```. 
+
+**It automatically updates the ```setup_default``` file with the correct paths.**
 
 Check the following installation guidelines for each tool for the necessary dependencies and requirements before running the ```installation.sh``` script.
 #### Installing a Risc-V toolchain, the cross-compiler
@@ -74,6 +76,24 @@ Moreover, you need to install the gem5 from this repository:
 ```
 $ git clone https://github.com/cad-polito-it/gem5
 ```
+
+#### Installing the Gem5 Pipeline Visualizer
+**<span style="color:red">This section is for the In order Architecture.</span>**
+
+To install the Gem5 Pipeline Visualizer, you can follow these [instructions](https://github.com/cad-polito-it/gem5_visualizer).
+
+You need to install Qt 6.8.3 (**VERY IMPORTANT**) from [here](https://www.qt.io/download-qt-installer). 
+You can follow [these instructions](https://doc.qt.io/qt-6/gettingstarted.html) for the installation.
+
+Make sure to install the desktop version and the needed libraries.
+
+After installing Qt, you need to set the ```QT_INSTALLATION_DIR``` environment variable to point to the Qt installation directory. For example:
+```bash
+export QT_INSTALLATION_DIR="/path/to/qt/installation"
+```
+
+Then, you can run the ```installation.sh``` script that will download and compile the Gem5 Pipeline Visualizer.
+
 
 #### Installing Konata, the Pipeline Visualizer
 
@@ -123,89 +143,3 @@ For adding a new program, you can follow the steps below:
 - Antonio Porsia (antonio.porsia@polito.it)
 
 Feel free to contribute with issues and pull requests or contact us!
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
