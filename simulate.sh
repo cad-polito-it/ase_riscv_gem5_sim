@@ -1,7 +1,7 @@
 #!/bin/bash
 
 usage () {
-	echo "simulate a riscv OoO cpu with gem5"
+	echo "simulate a riscv cpu with gem5"
 	echo "./simulate.sh [OPTIONS]"
 	echo "OPTIONS: "
 	echo "-s path to the setup file (default ./setup_default)"
@@ -60,6 +60,7 @@ if [[ $# -gt 0  &&  ! $1 =~ ^- ]]; then
    exit 1
    fi
 fi
+shift
 # let's keep the script still interactive
 interactive=true
 ;;
