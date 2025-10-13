@@ -139,7 +139,7 @@ echo "Simulating program ${program}"
 
 if ${GEM5_CPU_IN_ORDER} ; then
 
-gem5_options="--debug-flags=MinorGUI     --outdir=${RESULTS_DIR}/${program}/ --verbose "
+gem5_options="--debug-flags=MinorGUI --outdir=${RESULTS_DIR}/${program}/ --verbose "
 simulation_script_option="--caches  --cpu-type MinorCPU --l1d_size 8388608 --l1i_size 8388608 --cacheline_size 512 --cpu-clock 1MHz --sys-clock 10GHz -c ${program_folder}/${program}.elf    "   #--directory=${RESULTS_DIR}/${program}
 
 echo "${GEM5_INSTALLATION_PATH}/${GEM5_ISA}/gem5.${GEM5_VARIANT} ${gem5_options} ${GEM5_SIMULATION_SCRIPT} ${simulation_script_option}" 
