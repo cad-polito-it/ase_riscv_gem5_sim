@@ -6,7 +6,7 @@ This README provides an environment for simulating a program on a parametrizable
 ![flow](.images/gem5_workflow.png "Simulation flow")
 
 ## Table of contest
-- [Architetture dei Sistemi di Elaborazione@Politecnico di Torino: SIMULATING AN OoO RISC-V CPU WITH GEM5](#architetture-dei-sistemi-di-elaborazionepolitecnico-di-torino-simulating-an-ooo-risc-v-cpu-with-gem5)
+- [Architetture dei Sistemi di Elaborazione@Politecnico di Torino: SIMULATING A RISC-V CPU WITH GEM5](#architetture-dei-sistemi-di-elaborazionepolitecnico-di-torino-simulating-a-risc-v-cpu-with-gem5)
   - [Table of contest](#table-of-contest)
   - [Setup the environment](#setup-the-environment)
     - [Prerequisites](#prerequisites)
