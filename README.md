@@ -119,7 +119,7 @@ Unzip the release, inside you will find an executable named ```konata``` or ```k
 
 To simulate a program, run the `simulate.sh` script with the desired program as an argument, and the desired configuration file:  
 ```bash
-./simulate.sh -i ./programs/sanity_test/ -nogui -setup ./setup_default
+./simulate.sh -i ./programs/sanity_test/ -nogui --setup ./setup_default
 ```
 
 You can specify with `-gui `or `-nogui `the automatic opening of the Pipeline visualizer.

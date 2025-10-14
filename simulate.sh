@@ -9,7 +9,7 @@ usage () {
 	echo "-gui|-nogui (mutually exclusive) the gem5 is|not going to be visuallized by the pipeline visualizer"
 	echo ""
 	echo "Example: "
-	echo "./simulate ./programs/my_fancy_c_benchmark -nogui"
+	echo "./simulate.sh ./programs/my_fancy_c_benchmark -nogui"
 	echo "it will search in the folder ./programs/my_fancy_c_benchmark"
 	echo "for a recipe in a Makefile to compile, and create an executable file called my_fancy_c_benchmark.elf."
 	echo "Afterward, it executed the architectural simulation with gem5."
