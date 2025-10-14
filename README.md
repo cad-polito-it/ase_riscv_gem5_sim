@@ -1,6 +1,6 @@
-# Architetture dei Sistemi di Elaborazione@Politecnico di Torino: SIMULATING AN OoO RISC-V CPU WITH GEM5
+# Architetture dei Sistemi di Elaborazione@Politecnico di Torino: SIMULATING A RISC-V CPU WITH GEM5
 
-This README provides an environment for simulating a program on a parametrizable RISC-V Out of Order (OoO) CPU and visualize the pipeline. You can see the flow in the Figure below.
+This README provides an environment for simulating a program on a parametrizable RISC-V CPU and visualize the pipeline. You can see the flow in the Figure below.
 
 
 ![flow](.images/gem5_workflow.png "Simulation flow")
@@ -20,21 +20,21 @@ This README provides an environment for simulating a program on a parametrizable
 ## Setup the environment 
 First of all, you need to clone the repository with the following command, for SSH:
 ```
-git clone git@github.com:cad-polito-it/ase_riscv_gem5_sim.git
+$ git clone git@github.com:cad-polito-it/ase_riscv_gem5_sim.git
 ```
 For HTTPS:
 ```
-git clone https://github.com/cad-polito-it/ase_riscv_gem5_sim.git
+$ git clone https://github.com/cad-polito-it/ase_riscv_gem5_sim.git
 ```
 
 ### Prerequisites
-In order to simulate a benchmark, you need the following three tools:
+In order to simulate a program, you need the following three tools:
 - A Risc-V cross compiler
 - An architectural simulator
 - A pipeline visualizer
 
 Installation guidelines are provided for each of the aforementioned tools.
-In case you are using LABINF PCs, you can skip the installation part (Be aware, tools' compilation is time consuming!).
+In case you are using LABINF PCs, you can skip the installation part.
 
 An important file for the simulation flow is the [```setup_default```](./setup_default).
 In this file you need to specify you installation paths for different tools.
@@ -46,23 +46,56 @@ export GEM5_SRC="/mnt/d/gem5_simulator/gem5/"
 ```
 The ```CC``` is the cross compiler, and it is installed in ```/usr/bin```. Meanwhile the Architectural Simulator (Gem5) is installed in ```/mnt/d/gem5_simulator/build```, while its soruce are at ```/mnt/d/gem5_simulator/gem5```.
 
-### Installing a Risc-V toolchain, the cross-compiler
- 
-You can compile from scratch the toolchain for Risc-V following the instruction @ https://github.com/riscv-collab/riscv-gnu-toolchain
-
-For linux users, you can intall the toolchain using you package manager. For example, for ubuntu users:
-```
-sudo apt install gcc-riscv64-linux-gnu
+In the repository, you have different ```setup_default``` files, each one for a specific configuration (LABINF, VM, or your native installation). You can choose the one that fits your needs. For example, if you want to use the LABINF configuration, you can copy the corresponding file ```setup_default_labinf``` to ```setup_default```:
+```bash 
+$ cp setup_default_labinf setup_default
 ```
 
-### Installing Gem5, the Architectural Simulator
-To install Gem5, you can follow the guidelines @ https://www.gem5.org/documentation/general_docs/building
+### Installation 
+
+In the repository, you can find a script named [```installation.sh```](./utils/installation.sh) (in the utils folder) that can help you to download the cross-compiler, the gem5 simulator and generate the ```setup_default``` file. You can run it with the following command:
+
+```bash
+$ ./utils/installation.sh
+```
+It will install the cross-compiler, gem5 and the pipeline visualizer in a default folder  named ```./tools/```. 
+
+**It automatically updates the ```setup_default``` file with the correct paths.**
+
+Check the following installation guidelines for each tool for the necessary dependencies and requirements before running the ```installation.sh``` script.
+#### Installing a Risc-V toolchain, the cross-compiler
+
+You can compile from scratch the toolchain and the necessary dependencies for Risc-V following [these instructions](https://github.com/riscv-collab/riscv-gnu-toolchain).
+
+
+#### Installing Gem5, the Architectural Simulator
+To install Gem5 and the necessary dependencies, you can follow these [instructions](https://www.gem5.org/documentation/general_docs/building).
 
 Just remember that you need the following Gem5 characteristics to install:
 - ISA = RISCV.
 - variant = opt.
 
-**Be aware:** the Gem5 compilation is very, very, very (did i already say very?!) time consuming.
+Moreover, you need to install the gem5 from this repository:
+```
+$ git clone https://github.com/cad-polito-it/gem5
+```
+
+#### Installing the Gem5 Pipeline Visualizer
+**<span style="color:red">This section is for the In order Architecture.</span>**
+
+To install the Gem5 Pipeline Visualizer, you can follow these [instructions](https://github.com/cad-polito-it/gem5_visualizer).
+
+You need to install Qt 6.8.3 (**VERY IMPORTANT**) from [here](https://www.qt.io/download-qt-installer). 
+You can follow [these instructions](https://doc.qt.io/qt-6/gettingstarted.html) for the installation.
+
+Make sure to install the desktop version and the needed libraries.
+
+After installing Qt, you need to set the ```QT_INSTALLATION_DIR``` environment variable to point to the Qt installation directory. For example:
+```bash
+export QT_INSTALLATION_DIR="/path/to/qt/installation"
+```
+
+Then, you can run the ```installation.sh``` script that will download and compile the Gem5 Pipeline Visualizer.
 
 You need to install a specific version of gem5:
 ```bash
@@ -70,8 +103,11 @@ git clone https://github.com/gem5/gem5.git && cd gem5
 git checkout v22.1.0.0
 ```
 
-### Installing Konata, the Pipeline Visualizer
-To download Konata, visit the Konata github pages @ https://github.com/shioyadan/Konata/releases
+#### Installing Konata, the Pipeline Visualizer
+
+**<span style="color:red">This section is for the Out of Order (OoO) Architecture.</span>**
+
+To download Konata, visit the Konata's [repository](https://github.com/shioyadan/Konata/releases)
 
 Download the appropriate Konata release for your operating system. Konata is available for various platforms, including Windows, macOS, and Linux.
 
@@ -81,148 +117,37 @@ Unzip the release, inside you will find an executable named ```konata``` or ```k
 
 ## HOWTO - Simulate a Program
 
-To simulate a program, run the `simulate.sh` script with the desired program as an argument:  
+To simulate a program, run the `simulate.sh` script with the desired program as an argument, and the desired configuration file:  
 ```bash
-./simulate.sh -i ./programs/sanity_test/ -nogui
+./simulate.sh -i ./programs/sanity_test/ -nogui -setup ./setup_default
 ```
 
-You can specify with `-gui `or `-nogui `the automatic opening of the Konata simulation (**for linux users**).
+You can specify with `-gui `or `-nogui `the automatic opening of the Pipeline visualizer.
 
 This will produce an ELF (Executable and Linkable Format) file in the `programs/sanity_test/` directory.
 Afterward, the ELF is passed to the Architectural Simulator, and program-related statistics (```stats.txt```) and trace (```trace.out```)are dumped in ```./results/sanity_test/```
 
-## HOWTO - Visualize the Pipeline with Konata
-The instruction trace, and the statistics are extractred **only** from a Region of Interest (ROI), as Figure below shows.
-
-```C
-#ifdef _GEM5_
-#include <gem5/m5ops.h>
-#endif /*_GEM5_*/
-
-int main() {
-
-
-/********************************************************
- *****      Starting Region of Interest (ROI)    ********
-********************************************************/
-#if _GEM5_
- m5_work_begin(1,1);   
-#endif /*_GEM5_*/
-
-    // my c benchmark core 
-    angle2time_conversion();
-    tooth_to_spark();
-
-/********************************************************
- *****      End Region of Interest (ROI)         ********
-********************************************************/
-#ifdef _GEM5_
-    m5_work_end(1,1);
-#endif /*_GEM5_*/
-    return 0;
-}
+You can execute the script in interactive mode:
+```bash
+./simulate.sh -setup ./setup_default
 ```
 
-
-To visualize the pipeline, follow these steps:
-
-1. Load the `trace.out` file onto Konata, a tool for visualizing gem5 traces.
-   From the menu in the window or using drag and drop.
-    ![load](.images/konata.png)
-
-2. Use Konata's interface to visualize and analyze the pipeline behavior of your simulated program.
-
-**Note** For linux-based users you can directly launch the pipeline visualizer with the option ```-gui``` option in simulate script
+## HOWTO - Add a new program
+For adding a new program, you can follow the steps below:
+1. Copy an existing folder in the `programs/` directory, e.g., `programs/program_1/` and rename it to `programs/program_2/`.
+2. Modify the source code (assembly or c files) in the `program_2/` folder.
+3. Modify the `Makefile` in the `program_2/` folder if necessary (add new source files). In the following line (line 23):
+    ```makefile
+    ASM = ./program2.s # Removed ./program1.s
+    ```
 
 ## Contributors
 - Francesco Angione (francesco.angione@polito.it)
+- Nicola di Gruttola giardino (nicola.digruttola@polito.it)
+- Behnam Farnaghinejad (behnam.farnaghinejad@polito.it)
+- Gabriele Filipponi (gabriele.filipponi@polito.it)
 - Giorgio Insinga (giorgio.insinga@polito.it)
 - Annachiara Ruospo (annachiara.ruospo@polito.it)
+- Antonio Porsia (antonio.porsia@polito.it)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Feel free to contribute with issues and pull requests or contact us!

@@ -1,7 +1,8 @@
 # tool macros
 CC ?= gcc
-CXX ?= # FILL: the compiler
-CFLAGS :=  $$OPTIMIZATION_FLAGS -mcmodel=medlow -march=rv64g -mabi=lp64d  -static -Wall -Wextra -D_GEM5_ -I$$GEM5_SRC/include -I$$GEM5_SRC/include/gem5/asm/generic -nostartfiles -T./linker.ld  -lc -L$$CC_INSTALLATION_PATH/lib 
+CXX ?= g++
+OBJDUMP ?= objdump
+CFLAGS :=  $$OPTIMIZATION_FLAGS -mcmodel=medlow -march=rv32imf -mabi=ilp32 -mno-relax  -Wall -Wextra -nostartfiles    
 CXXFLAGS := $$OPTIMIZATION_FLAGS -static -Wall -Wextra 
 COBJFLAGS := $(CFLAGS) -c
 
@@ -18,9 +19,8 @@ TARGET = $$program.elf
 # src files & obj files
 SRC := $(foreach x, $(SRC_PATH), $(wildcard $(addprefix $(x)/*,.c*)))
 
-## NOTE: since we are compiling the code with static (otherwise we could use -lm5 for including the static compiled library of m5op )
-## crt0 is the c runtime zero (initialization file)
-ASM = $$GEM5_SRC/util/m5/src/abi/riscv/m5op.S ./crt0.S 
+
+ASM = ./program1.s
 
 OBJ := $(addprefix $(OBJ_PATH)/, $(addsuffix .o, $(notdir $(basename $(SRC)))))
 
@@ -40,13 +40,16 @@ $(TARGET): $(OBJ)
 $(OBJ_PATH)/%.o: $(SRC_PATH)/%.c*
 	$(CC) $(COBJFLAGS) -o $@ $<
 
+$(TARGET_NAME).dump: $(TARGET)
+	$(OBJDUMP) -d $< > $@
+
 # phony rules
 .PHONY: makedir
 makedir:
 	@mkdir -p  $(OBJ_PATH) 
 
 .PHONY: all
-all: $(TARGET)
+all: $(TARGET) $(TARGET_NAME).dump
 
 .PHONY: clean
 clean:

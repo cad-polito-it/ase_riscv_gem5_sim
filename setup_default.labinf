@@ -5,9 +5,9 @@ export WORK_DIR=$(pwd)
 ###############################################
 #########   CROSS COMPILER RISCV  #############
 ###############################################
-export CC="/mnt/d/uni/PoundtheHeadonDesk/ase_new/toolchain/bin/riscv64-unknown-elf-gcc"
-export OBJDUMP="/mnt/d/uni/PoundtheHeadonDesk/ase_new/toolchain/bin/riscv64-unknown-elf-objdump"
-export CC_INSTALLATION_PATH="/mnt/d/uni/PoundtheHeadonDesk/ase_new/toolchain/bin/"
+export CC="/opt/riscv-2023.10.18/bin/riscv64-unknown-elf-gcc"
+export OBJDUMP="/opt/riscv-2023.10.18/bin/riscv64-unknown-elf-objdump"
+export CC_INSTALLATION_PATH="/opt/riscv-2023.10.18/bin/"
 ## optimization flags for the compiler
 export OPTIMIZATION_FLAGS="-O0 "
 
@@ -15,7 +15,7 @@ export OPTIMIZATION_FLAGS="-O0 "
 ######### ARCHITECTURAL SIMULATOR #############
 ###############################################
 
-export GEM5_INSTALLATION_PATH="/mnt/d/uni/PoundtheHeadonDesk/ase_new/gem5/build/"
+export GEM5_INSTALLATION_PATH="/opt/gem5-22.1-ASE/gem5/build/"
 export GEM5_ISA="RISCV"
 export GEM5_VARIANT="opt"
 
@@ -36,7 +36,7 @@ mkdir ${RESULTS_DIR}
 fi 
 
 ## util path from gem5 rep
-export GEM5_SRC="/mnt/d/uni/PoundtheHeadonDesk/ase_new/gem5/"
+export GEM5_SRC="/opt/gem5-22.1-ASE/gem5/"
 export GEM5_UTIL=${GEM5_SRC}/util/
 
 ### EXPORTING gem5 utilities for python
@@ -51,4 +51,4 @@ export PYTHONPATH=$PYTHONPATH:${GEM5_SRC}src/sim
 ###############################################
 #########   PIPELINE VISUALIZER   #############
 ###############################################
-export PIPELINE_VISUALIZER="/mnt/d/uni/PoundtheHeadonDesk/ase_riscv_gem5_sim/tools/gem5_visualizer/build/gem5_pipeline_visualizer"
+export PIPELINE_VISUALIZER="/opt/gem5-22.1-ASE/Gem5_Pipeline_Visualizer-x86_64.AppImage"

@@ -48,12 +48,15 @@ _start:
 
 
 main_entry:
-  /* jump to main program entry point (argc = argv = 0) */
+/* jump to main program entry point (argc = argv = 0) */
+
   jal x1, main
 
-/*it should never reach this part*/
-  j m5_exit
-  
+  /* Exit via ecall (Linux convention): x17=93 (exit), x10=0 */
+    li a0, 0
+    li a7, 93
+    ecall 
+
   __main_exit_handler__:
   j __main_exit_handler__ 
 

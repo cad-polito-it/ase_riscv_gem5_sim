@@ -5,6 +5,7 @@
 *.o
 *.ko
 *.obj
+*.dump
 *.elf
 
 # Linker output
@@ -54,3 +55,10 @@ dkms.conf
 results/
 __pycache__/
 gem5/__pycache__/
+
+.badlog
+.reg_log
+g5v_pipeline.txt
+
+# Default location for installation
+tools/

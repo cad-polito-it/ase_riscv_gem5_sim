@@ -45,7 +45,7 @@ SECTIONS
         *(.srodata.cst2)
         *(.srodata*)
         *(.sdata .sdata.* .gnu.linkonce.s.*)
-        _gp = . + STACK_SIZE;
+          _gp = . + STACK_SIZE;
     } > ram
 
     .data ALIGN(4) : {
