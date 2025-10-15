@@ -48,7 +48,7 @@ The ```CC``` is the cross compiler, and it is installed in ```/usr/bin```. Meanw
 
 In the repository, you have different ```setup_default``` files, each one for a specific configuration (LABINF, VM, or your native installation). You can choose the one that fits your needs. For example, if you want to use the LABINF configuration, you can copy the corresponding file ```setup_default_labinf``` to ```setup_default```:
 ```bash 
-$ cp setup_default_labinf setup_default
+$ cp setup_default.labinf setup_default
 ```
 
 ### Installation 
