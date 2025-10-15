@@ -99,7 +99,7 @@ Then, you can run the ```installation.sh``` script that will download and compil
 
 You need to install a specific version of gem5:
 ```bash
-git clone https://github.com/gem5/gem5.git && cd gem5
+git clone https://github.com/cad-polito-it/gem5.git && cd gem5
 git checkout v22.1.0.0
 ```
 
