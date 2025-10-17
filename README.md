@@ -69,16 +69,17 @@ You can compile from scratch the toolchain and the necessary dependencies for Ri
 
 
 #### Installing Gem5, the Architectural Simulator
-To install Gem5 and the necessary dependencies, you can follow these [instructions](https://www.gem5.org/documentation/general_docs/building).
+
+Start by cloning gem5 from this repository:
+```
+$ git clone https://github.com/cad-polito-it/gem5
+```
+
+To install Gem5 and the necessary dependencies, you can follow the README of that repo as well as these [instructions](https://www.gem5.org/documentation/general_docs/building).
 
 Just remember that you need the following Gem5 characteristics to install:
 - ISA = RISCV.
 - variant = opt.
-
-Moreover, you need to install the gem5 from this repository:
-```
-$ git clone https://github.com/cad-polito-it/gem5
-```
 
 #### Installing the Gem5 Pipeline Visualizer
 **<span style="color:red">This section is for the In order Architecture.</span>**
@@ -88,32 +89,17 @@ To install the Gem5 Pipeline Visualizer, you can follow these [instructions](htt
 You need to install Qt 6.8.3 (**VERY IMPORTANT**) from [here](https://www.qt.io/download-qt-installer). 
 You can follow [these instructions](https://doc.qt.io/qt-6/gettingstarted.html) for the installation.
 
-Make sure to install the desktop version and the needed libraries.
+Make sure to install the desktop version and the needed libraries, as well cmake as shown in the following:
 
-After installing Qt, you need to set the ```QT_INSTALLATION_DIR``` environment variable to point to the Qt installation directory. For example:
+![custom](.images/custom.png "Custom QT installation")
+![what](.images/qt_what.jpg "What to select in the QT installation")
+
+After installing Qt, you need to set the ```QT_INSTALLATION_DIR``` environment variable to point to the Qt installation directory. By default should be like the following:
 ```bash
-export QT_INSTALLATION_DIR="/path/to/qt/installation"
+export QT_INSTALLATION_DIR="/opt/Qt/6.8.3/gcc_64"
 ```
 
 Then, you can run the ```installation.sh``` script that will download and compile the Gem5 Pipeline Visualizer.
-
-You need to install a specific version of gem5:
-```bash
-git clone https://github.com/cad-polito-it/gem5.git && cd gem5
-git checkout v22.1.0.0
-```
-
-#### Installing Konata, the Pipeline Visualizer
-
-**<span style="color:red">This section is for the Out of Order (OoO) Architecture.</span>**
-
-To download Konata, visit the Konata's [repository](https://github.com/shioyadan/Konata/releases)
-
-Download the appropriate Konata release for your operating system. Konata is available for various platforms, including Windows, macOS, and Linux.
-
-Unzip the release, inside you will find an executable named ```konata``` or ```konata.exe``` (**OS dependent!**).
-
-**Be aware**: For windows/macOS users, you need to open the Konata application manually and load the trace
 
 ## HOWTO - Simulate a Program
 
