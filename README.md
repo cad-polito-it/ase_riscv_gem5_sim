@@ -92,7 +92,7 @@ You can follow [these instructions](https://doc.qt.io/qt-6/gettingstarted.html) 
 Make sure to install the desktop version and the needed libraries, as well cmake as shown in the following:
 
 ![custom](.images/custom.png "Custom QT installation")
-![what](.images/qt_what.jpg "What to select in the QT installation")
+![what](.images/qt_what.png "What to select in the QT installation")
 
 After installing Qt, you need to set the ```QT_INSTALLATION_DIR``` environment variable to point to the Qt installation directory. By default should be like the following:
 ```bash
