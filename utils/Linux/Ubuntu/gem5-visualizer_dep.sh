@@ -17,6 +17,6 @@ fi
 apt update -y
 apt upgrade -y
 
-apt install qt6-base-dev qtwayland5 qtwayland5-dev-tools libxcb-cursor0 -y
+apt install qt6-base-dev qt6-declarative-dev qtwayland5 qtwayland5-dev-tools libxcb-cursor0 -y
 
 exit 0
