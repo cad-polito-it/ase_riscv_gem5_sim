@@ -82,7 +82,7 @@ Just remember that you need the following Gem5 characteristics to install:
 - variant = opt.
 
 #### Installing the Gem5 Pipeline Visualizer
-**<span style="color:red">This section is for the In order Architecture.</span>**
+$\color{Red}\Huge{\textsf{This section is for the In order Architecture}}$
 
 To install the Gem5 Pipeline Visualizer, you can follow these [instructions](https://github.com/cad-polito-it/gem5_visualizer).
 
