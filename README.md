@@ -101,6 +101,18 @@ export QT_INSTALLATION_DIR="/opt/Qt/6.8.3/gcc_64"
 
 Then, you can run the ```installation.sh``` script that will download and compile the Gem5 Pipeline Visualizer.
 
+#### Installing Konata, the Pipeline Visualizer
+
+$\color{Red}\Huge{\textsf{This section is for the Out of Order (OoO) Architecture}}$
+
+To download Konata, visit the Konata's [repository](https://github.com/shioyadan/Konata/releases)
+
+Download the appropriate Konata release for your operating system. Konata is available for various platforms, including Windows, macOS, and Linux.
+
+Unzip the release, inside you will find an executable named ```konata``` or ```konata.exe``` (**OS dependent!**).
+
+**Be aware**: For windows/macOS users, you need to open the Konata application manually and load the trace
+
 ## HOWTO - Simulate a Program
 
 To simulate a program, run the `simulate.sh` script with the desired program as an argument, and the desired configuration file:  
