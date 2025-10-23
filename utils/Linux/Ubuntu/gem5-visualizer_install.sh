@@ -16,15 +16,16 @@ cd ${ROOT_DIR}/gem5_visualizer
 mkdir build
 cd build
 
-export QT_INSTALLATION_DIR="/opt/Qt/6.8.3/gcc_64"
+FILE=""
+if [[ "${ARCH}" == "x86_64" ]]; then
+	FILE="qt-online-installer-linux-x64-online.run"
+	export QT_INSTALLATION_DIR="/opt/Qt/6.8.3/gcc_64"	
+elif [[ "${ARCH}" == "aarch64" ]]; then
+	FILE="qt-online-installer-linux-arm64-online.run"
+	export QT_INSTALLATION_DIR="/opt/Qt/6.8.3/gcc_arm64"
+fi
 if [[ ! -d "${QT_INSTALLATION_DIR}" ]]; then
 	echo "Downloading QT, follow the instructions, please select custom installation, v. 6.8.3 Desktop, Include Libraries and CMAKE"
-	FILE=""
-	if [[ "$ARCH" == "x86_64" ]]; then
-		FILE="qt-online-installer-linux-x64-online.run"
-	elif [[ "$ARCH" == "aarch64" ]]; then
-		FILE="qt-online-installer-linux-arm64-online.run"
-	fi
 	wget "https://download.qt.io/official_releases/online_installers/${FILE}"
 	chmod 755 ${FILE}
 	sudo "./${FILE}"

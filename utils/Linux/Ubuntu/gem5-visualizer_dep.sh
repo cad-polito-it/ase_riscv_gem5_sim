@@ -17,6 +17,11 @@ fi
 apt update -y
 apt upgrade -y
 
-apt install qt6-base-dev qt6-declarative-dev qtwayland5 qtwayland5-dev-tools libxcb-cursor0 -y
+apt install build-essential git qt6-base-dev qt6-declarative-dev qtwayland5 qtwayland5-dev-tools libxcb-cursor0 -y
+
+if [ "${ARCH}" == "aarch64" ] && [ "${MAJOR}" == "22" ]; then
+	echo "[ERROR] UBUNTU 22 is not supported on this architecture!"
+	exit 1
+fi
 
 exit 0
