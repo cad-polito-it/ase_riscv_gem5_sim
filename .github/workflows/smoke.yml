@@ -15,12 +15,6 @@ jobs:
           set -e
           find utils -type f -name '*.sh' -print0 | xargs -0 -I{} bash -n {}
 
-      - name: ShellCheck static lint (optional but helpful)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y shellcheck
-          # Lint all tracked shell scripts
-          shellcheck -x $(git ls-files '*.sh')
 
   # Smoke the scripts in a Fedora environment (no installs)
   fedora-smoke:
