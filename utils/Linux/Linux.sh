@@ -1,11 +1,33 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-export DISTRO=$(lsb_release -ds | cut -d " " -f 1)
+# Ensure OS is set (needed by the handoff path)
+export OS="${OS:-$(uname -s)}"
 
-##############################################################################
+# Detect distro
+if [ -r /etc/os-release ]; then
+  . /etc/os-release
+  case "${ID:-}" in
+    ubuntu) DISTRO="Ubuntu" ;;
+    fedora) DISTRO="Fedora" ;;
+    *)      DISTRO="${NAME%% *}" ;;
+  esac
+  VER="${VERSION_ID:-}"
+elif command -v lsb_release >/dev/null 2>&1; then
+  DISTRO="$(lsb_release -si 2>/dev/null || echo Linux)"
+  VER="$(lsb_release -sr 2>/dev/null || uname -r)"
+else
+  DISTRO="Linux"
+  VER="$(uname -r)"
+fi
 
-if [ -f "${UTILS_DIR}/${OS}/${DISTRO}/${DISTRO}.sh" ]; then
-	${UTILS_DIR}/${OS}/${DISTRO}/${DISTRO}.sh
+export DISTRO VER
+export MAJOR="${VER%%.*}"
+export MINOR="${VER#*.}"; [ "$MINOR" = "$VER" ] && MINOR="0"
+
+# Handoff
+if [ -n "${UTILS_DIR:-}" ] && [ -f "${UTILS_DIR}/${OS}/${DISTRO}/${DISTRO}.sh" ]; then
+  bash "${UTILS_DIR}/${OS}/${DISTRO}/${DISTRO}.sh"
 fi
 
 exit 0
