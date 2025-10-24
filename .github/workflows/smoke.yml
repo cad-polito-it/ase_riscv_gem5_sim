@@ -1,0 +1,48 @@
+name: smoke
+on:
+  push:
+  pull_request:
+
+jobs:
+  # Lint & syntax on Ubuntu runner
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bash syntax check
+        run: |
+          set -e
+          find utils -type f -name '*.sh' -print0 | xargs -0 -I{} bash -n {}
+
+      - name: ShellCheck static lint (optional but helpful)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+          # Lint all tracked shell scripts
+          shellcheck -x $(git ls-files '*.sh')
+
+  # Smoke the scripts in a Fedora environment (no installs)
+  fedora-smoke:
+    runs-on: ubuntu-latest
+    container: fedora:42
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prep basic tools
+        run: |
+          dnf -y upgrade --refresh
+          dnf -y install which findutils
+
+      - name: Bash syntax check (Fedora)
+        run: |
+          set -e
+          find utils -type f -name '*.sh' -print0 | xargs -0 -I{} bash -n {}
+
+      - name: Distro detector dry run (won't execute installers)
+        env:
+          UTILS_DIR: ${{ github.workspace }}/__empty   # point to empty dir so Linux.sh won't hand off
+          OS: Linux
+        run: |
+          mkdir -p "$UTILS_DIR"
+          bash utils/Linux/Linux.sh
