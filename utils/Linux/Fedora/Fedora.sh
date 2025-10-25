@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
+set -euo pipefail
+
 VER=$(rpm -E %fedora 2>/dev/null || echo "")
 
 export MAJOR=$VER
 
 declare -A deps
-echo "HIIIII it's working"
 
 ##############################################################################
 
@@ -23,7 +24,7 @@ done
 
 ##############################################################################
 
-for f in ${UTILS_DIR}/${OS}/${DISTRO}/gem5-visualizer*_install.sh; do
+for f in ${UTILS_DIR}/${OS}/${DISTRO}/*_install.sh; do
   fid=$(basename "${f}" | cut -d "_" -f1)
   if [ "${deps[${fid}]:-1}" -eq 0 ]; then
     echo "Installing ${fid}..."

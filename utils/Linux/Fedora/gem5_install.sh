@@ -6,7 +6,7 @@ GEM_5_REPOSITORY="https://github.com/cad-polito-it/gem5.git"
 
 ##############################################################################
 
-if [[ -f "${ROOT_DIR}/gem5" ]]; then 
+if [[ -f "${ROOT_DIR}/gem5/.git" ]]; then 
     echo "gem5 already exists. Skipping. Remove it if you want to reinstall"
 	exit 0
 else

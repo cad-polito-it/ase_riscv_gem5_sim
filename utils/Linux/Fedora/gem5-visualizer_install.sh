@@ -32,16 +32,6 @@ fi
 
 ##############################################################################
 
-CMAKE_VER="$(${CMAKE} --version | awk 'NR==1{print $3}')"
-CMAKE_MAJOR="${CMAKE_VER%%.*}"
-CMAKE_MINOR="$(echo "${CMAKE_VER}" | cut -d. -f2)"
-if ! { [ "${CMAKE_MAJOR}" -eq 3 ] && [ "${CMAKE_MINOR}" -ge 28 ]; } && ! { [ "${CMAKE_MAJOR}" -lt 4 ] && [ "${CMAKE_MAJOR}" -gt 3 ]; }; then
-  echo "[ERROR] CMake ${CMAKE_VER} does not satisfy >=3.28 and <4.x"
-  exit 1
-fi
-
-##############################################################################
-
 echo "Downloading gem5-visualizer"
 if [[ -d "${SRC_DIR}/.git" ]]; then
   echo "Repo already present at ${SRC_DIR} (skipping clone)"
@@ -62,8 +52,8 @@ export LIBGL_ALWAYS_SOFTWARE=1
 
 ##############################################################################
 
-"${CMAKE}" .. -DCMAKE_BUILD_TYPE=Release -DQT_CMAKE_PREFIX_PATH="${QT_DIR}"
-make
+/usr/bin/cmake .. -DCMAKE_BUILD_TYPE=Release -DQT_CMAKE_PREFIX_PATH="${QT_DIR}"
+make -j"$(nproc-1)"
 
 ##############################################################################
 
