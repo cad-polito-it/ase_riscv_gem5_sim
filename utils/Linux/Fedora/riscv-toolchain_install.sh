@@ -13,7 +13,7 @@ fi
 
 echo "Installing RISC-V toolchain"
 git clone ${RISCV_TOOLCHAIN_REPOSITORY} ${ROOT_DIR}/riscv-gnu-toolchain
-
+git submodule update --init --recursive
 ##############################################################################
 
 cd ${ROOT_DIR}/riscv-gnu-toolchain
