@@ -26,7 +26,7 @@ export MAJOR="${VER%%.*}"
 export MINOR="${VER#*.}"; [ "$MINOR" = "$VER" ] && MINOR="0"
 
 # Handoff
-if [ -n "${UTILS_DIR:-}" ] && [ -f "${UTILS_DIR}/${OS}/${DISTRO}/${DISTRO}.sh" ]; then
+if  [ -f "${UTILS_DIR}/${OS}/${DISTRO}/${DISTRO}.sh" ]; then
   bash "${UTILS_DIR}/${OS}/${DISTRO}/${DISTRO}.sh"
 fi
 
