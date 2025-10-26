@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Ensure OS is set (needed by the handoff path)
-export OS="${OS:-$(uname -s)}"
+export DISTRO=$(lsb_release -ds | cut -d " " -f 1)
 
 # Detect distro
 if [ -r /etc/os-release ]; then
