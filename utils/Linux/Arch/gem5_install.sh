@@ -19,8 +19,8 @@ pip3 install scons==4.8
 
 ##############################################################################
 
-export PYTHON=/usr/bin/python3
-export PYTHON_CONFIG=/usr/bin/python3-config
+export PYTHON=/usr/bin/python3.10
+export PYTHON_CONFIG=/usr/bin/python3.10-config
 
 ##############################################################################
 
