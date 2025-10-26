@@ -17,8 +17,10 @@ fi
 pacman -Syu --noconfirm
 
 # Install gem5 dependencies for Arch Linux
-pacman -S --noconfirm base-devel git m4 scons zlib protobuf gperftools python boost pkg-config tk clang-format python-virtualenv hdf5 python-pydot mypy capstone libpng libelf wget cmake doxygen
-# Install Python 3.10
-pacman -S --noconfirm python310
+pacman -S --noconfirm base-devel git m4 scons zlib protobuf gperftools python boost pkg-config tk python-virtualenv hdf5 python-pydot mypy capstone libpng libelf wget cmake doxygen
+# Install Python 3.10 from source
+git clone https://aur.archlinux.org/python310.git
+cd python310
+makepkg -si
 
 exit 0
