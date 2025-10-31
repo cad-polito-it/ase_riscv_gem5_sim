@@ -17,6 +17,6 @@ fi
 pacman -Syu --noconfirm
 
 # Install RISC-V toolchain dependencies for Arch Linux
-pacman -S --noconfirm autoconf automake curl python python-pip python-tomli libmpc mpfr gmp gawk base-devel bison flex texinfo gperf libtool patchutils bc zlib expat ninja git cmake glib2 libslirp
+pacman -S --needed --noconfirm autoconf automake curl python python-pip python-tomli libmpc mpfr gmp gawk base-devel bison flex texinfo gperf libtool patchutils bc zlib expat ninja git cmake glib2 libslirp
 
 exit 0
