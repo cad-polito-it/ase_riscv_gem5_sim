@@ -17,6 +17,6 @@ fi
 pacman -Syu --noconfirm
 
 # Install gem5-visualizer dependencies for Arch Linux
-pacman -S --noconfirm base-devel git qt6-base qt6-declarative qt6-wayland libxcb
+pacman -S --needed --noconfirm base-devel git qt6-base qt6-declarative qt6-wayland libxcb
 
 exit 0
