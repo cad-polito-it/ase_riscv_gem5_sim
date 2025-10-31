@@ -21,6 +21,6 @@ pacman -S --noconfirm base-devel git m4 scons zlib protobuf gperftools python bo
 # Install Python 3.10 from source
 git clone https://aur.archlinux.org/python310.git
 cd python310
-makepkg -si
+su $USERNAME -c "makepkg -si"
 
 exit 0
