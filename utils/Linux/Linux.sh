@@ -13,7 +13,10 @@ if [ -r /etc/os-release ]; then
     *)      DISTRO="${NAME%% *}" ;;
   esac
   VER="${VERSION_ID:-}"
-elif command -v lsb_release >/dev/null 2>&1; then
+if command -v lsb_release >/dev/null 2>&1; then
+echo "lsb_release command not found"
+exit 1 
+fi 
   DISTRO="$(lsb_release -si 2>/dev/null || echo Linux)"
   VER="$(lsb_release -sr 2>/dev/null || uname -r)"
 else
