@@ -10,7 +10,6 @@ if ! command -v lsb_release >/dev/null 2>&1; then
 fi
 
 DISTRO="$(lsb_release -si 2>/dev/null)"
-VER="$(lsb_release -sr 2>/dev/null)"
 
 case "${DISTRO}" in
   Ubuntu|Fedora) ;;
@@ -20,7 +19,7 @@ case "${DISTRO}" in
     ;;
 esac
 
-export DISTRO VER
+export DISTRO
 
 # Handoff
 if  [ -f "${UTILS_DIR}/${OS}/${DISTRO}/${DISTRO}.sh" ]; then
