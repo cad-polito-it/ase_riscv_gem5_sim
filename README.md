@@ -111,7 +111,7 @@ Download the appropriate Konata release for your operating system. Konata is ava
 
 Unzip the release, inside you will find an executable named ```konata``` or ```konata.exe``` (**OS dependent!**).
 
-**Be aware**: For windows/macOS users, you need to open the Konata application manually and load the trace
+**Be aware**: You need load the trace manually
 
 ## HOWTO - Simulate a Program
 
