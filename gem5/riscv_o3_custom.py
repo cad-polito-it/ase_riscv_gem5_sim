@@ -174,7 +174,6 @@ class L2Cache(Cache):
         self.mem_side = bus.cpu_side_ports
 
 def create_cpu(options, cpu_id):
-    ## franout - the current parameters are modelling the Berkeley Out-of-Order Machine (BOOM)
     # from    gem5/src/arch/riscv/RiscvCPU.py
     # RiscvO3CPU is the configurable out-of-order CPU model supplied by gem5 for RISCV
     the_cpu = RiscvO3CPU() # it also creates an instance of the RiscvMMU and assign it to the cpu's mmu attribute
@@ -232,12 +231,12 @@ def create_cpu(options, cpu_id):
     # -- BPU SELECTION
     # ****************************
     # predictors from src/cpu/pred/BranchPredictor.py
-    # see create_prediictors for choose a predictor
-    the_cpu.branchPred = predictor.create_TournamentBP()
+    # see create_predictors for choosing a predictor
+    the_cpu.branchPred = predictor.create_LocalBP()
     # ****************************
     # - FETCH STAGE
     # ****************************
-    the_cpu.fetchWidth = 4
+    the_cpu.fetchWidth = 2
     the_cpu.fetchBufferSize = 16
     the_cpu.fetchQueueSize = 32
     the_cpu.smtNumFetchingThreads = 1
@@ -259,11 +258,11 @@ def create_cpu(options, cpu_id):
     # - RENAME STAGE
     # ****************************
     the_cpu.numROBEntries = 64
-    the_cpu.numIQEntries = 3
+    the_cpu.numIQEntries = 2000
     the_cpu.numPhysIntRegs = 80
     the_cpu.numPhysFloatRegs = 64
     the_cpu.renameWidth = 2
-    the_cpu.numRobs = 2
+    the_cpu.numRobs = 2000
     the_cpu.numPhysVecPredRegs = 32
     # most ISAs don't use condition-code regs, so default is 0
     the_cpu.numPhysCCRegs = 0
@@ -272,7 +271,7 @@ def create_cpu(options, cpu_id):
     # - DISPATCH/ISSUE STAGE
     # ****************************
     the_cpu.dispatchWidth = 2
-    the_cpu.issueWidth = 3
+    the_cpu.issueWidth = 2
     
     # ****************************
     # - EXECUTE STAGE
@@ -285,31 +284,31 @@ def create_cpu(options, cpu_id):
         opList = [
             OpDesc(opClass="IntAlu", opLat=1, pipelined=False)
         ]
-        count = 3
+        count = 1
 
     class CPU_IntMultDiv(FUDesc):
         opList = [
             OpDesc(opClass="IntMult", opLat=3, pipelined=False),
             OpDesc(opClass="IntDiv", opLat=8, pipelined=False)
         ]
-        count = 3
+        count = 0
     class CPU_FP_ALU(FP_ALU):
         opList = [
-            OpDesc(opClass="FloatAdd", opLat=4, pipelined=True),
-            OpDesc(opClass="FloatCmp", opLat=4, pipelined=True),
-            OpDesc(opClass="FloatCvt", opLat=4, pipelined=True),     
+            OpDesc(opClass="FloatAdd", opLat=6, pipelined=True),
+            OpDesc(opClass="FloatCmp", opLat=6, pipelined=True),
+            OpDesc(opClass="FloatCvt", opLat=6, pipelined=True),     
         ]
-        count = 3
+        count = 1
 
     class CPU_FP_MultDiv(FP_MultDiv):
         opList = [
-            OpDesc(opClass="FloatMult", opLat=4, pipelined=True),
-            OpDesc(opClass="FloatMultAcc", opLat=4, pipelined=True),
+            OpDesc(opClass="FloatMult", opLat=8, pipelined=True),
+            OpDesc(opClass="FloatMultAcc", opLat=8, pipelined=True),
             OpDesc(opClass="FloatDiv", opLat=4, pipelined=True),
             OpDesc(opClass="FloatSqrt", opLat=4, pipelined=True),
             OpDesc(opClass="FloatMisc", opLat=4, pipelined=True),
         ]
-        count = 3
+        count = 1
 
     class CPU_SIMD(SIMD_Unit):
         opList = [ 
@@ -346,11 +345,11 @@ def create_cpu(options, cpu_id):
         count = 0
 
     class CPU_ReadPort(ReadPort):
-        opList = [OpDesc(opClass="MemRead"), OpDesc(opClass="FloatMemRead")]
-        count = 3
+        opList = [OpDesc(opClass="MemRead", opLat=1), OpDesc(opClass="FloatMemRead", opLat=1)]
+        count = 2
     class CPU_WritePort(WritePort):
-        opList = [OpDesc(opClass="MemWrite"), OpDesc(opClass="FloatMemWrite")]
-        count = 3 
+        opList = [OpDesc(opClass="MemWrite", opLat=1), OpDesc(opClass="FloatMemWrite", opLat=1)]
+        count = 2
     class CPU_RdWrPort(RdWrPort):
         opList = [
             OpDesc(opClass="MemRead"),
@@ -358,12 +357,12 @@ def create_cpu(options, cpu_id):
             OpDesc(opClass="FloatMemRead"),
             OpDesc(opClass="FloatMemWrite"),
         ]
-        count = 3 + 2  
+        count = 0 
 
 
     class CPU_IprPort(IprPort):
         opList = [OpDesc(opClass="IprAccess", opLat=3, pipelined=False)]
-        count = 3    
+        count = 0  
     
     class CPUFUPool(FUPool):
         FUList = [
@@ -384,7 +383,7 @@ def create_cpu(options, cpu_id):
     # ****************************
     # - WRITE/Memory STAGE
     # ****************************
-    the_cpu.wbWidth = 2
+    the_cpu.wbWidth = 1
     the_cpu.LQEntries = 32
     the_cpu.SQEntries = 32
     # Number of places to shift addr before check
@@ -408,9 +407,9 @@ def create_cpu(options, cpu_id):
     the_cpu.commitWidth = 2
     the_cpu.squashWidth = 2
     # Time buffer size for backwards communication
-    the_cpu.backComSize = 5 
+    the_cpu.backComSize = 10 
     # Time buffer size for forward communication
-    the_cpu.forwardComSize = 5
+    the_cpu.forwardComSize = 10
     return the_cpu
 
 # run the gem5 simulation
@@ -501,25 +500,10 @@ def run_system_with_cpu(
     root = Root(full_system=False, system=system)
     m5.instantiate(None)
     print("Beginning simulation!")
-    exit_event = m5.simulate()
-    # check in case of exception or wrong code
-    if exit_event.getCause() !=  "workbegin":
-        eprint("Exit ERROR: Done simulation @ tick = %s: %s" %
-               (m5.curTick(), exit_event.getCause()))
-        return exit_event.getCode()
-    print("Starting trace in ROI (Region Of Interest) @ tick = %s: %s" %
-           (m5.curTick(), exit_event.getCause()))
-    m5.stats.reset()
     m5.trace.enable()
-    exit_event=m5.simulate()
-    # check in case of exception or wrong code
-    if exit_event.getCause() !=  "workend":
-        eprint("Exit ERROR: Done simulation @ tick = %s: %s" %
-               (m5.curTick(), exit_event.getCause()))
-        return exit_event.getCode()
-    print("Finishing trace in ROI (Region Of Interest) @ tick = %s: %s" %
-           (m5.curTick(), exit_event.getCause()))
+    exit_event = m5.simulate()
     m5.stats.dump()
+    print("Ending simulation!")
     return 0
 
  
