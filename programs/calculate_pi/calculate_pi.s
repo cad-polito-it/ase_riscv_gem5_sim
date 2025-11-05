@@ -68,5 +68,6 @@ bbp_finish:
     fsw f10, pi_result, t0
     
     # Exit
-    li a7, 10
+    li a0, 0
+    li a7, 93
     ecall
