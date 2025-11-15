@@ -19,8 +19,8 @@ TARGET = $$program.elf
 # src files & obj files
 SRC := $(foreach x, $(SRC_PATH), $(wildcard $(addprefix $(x)/*,.c*)))
 
-
-ASM = ./program1.s
+# if ASM not provided from outside, pick the first .s in this folder
+ASM ?= $(firstword $(wildcard ./*.s))
 
 OBJ := $(addprefix $(OBJ_PATH)/, $(addsuffix .o, $(notdir $(basename $(SRC)))))
 

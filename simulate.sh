@@ -126,8 +126,41 @@ echo "Compiling program ${program}"
 cd ${program_folder}
 if [[ -f "Makefile" ]] ; then 
 # if recipe for compiling the program exists
-make clean 
-make 
+# NEW: pick which .s file to use, if there are multiple
+shopt -s nullglob
+asm_files=( *.s )
+shopt -u nullglob
+
+asm_override=""
+
+if [[ ${#asm_files[@]} -eq 0 ]]; then
+	echo -e "\e[31mNo .s files found in ${program_folder}\e[0m"
+	exit 1
+elif [[ ${#asm_files[@]} -eq 1 ]]; then
+# Only one .s file=> just use it
+asm_override="./${asm_files[0]}"
+echo "Found single assembly file: ${asm_override}"
+else
+echo "Available assembly files in ${program_folder}:"
+select f in "${asm_files[@]}"; do
+	if [[ -n "$f" ]]; then
+		asm_override="./$f"
+		break
+	else
+		echo "Invalid choice"
+	fi
+done
+echo "Chosen assembly file: ${asm_override}"
+fi
+
+make clean
+
+if [[ -n "${asm_override}" ]]; then
+	make ASM="${asm_override}"
+else
+	# Fallback (shouldn’t happen, but just in case)
+	make
+fi
 
 if [[ $? -ne 0 ]] ; then 
 	echo -e "\e[31mCompilation error\e[0m"
