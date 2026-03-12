@@ -76,12 +76,16 @@ def create_LTAGE():
     pred.RASSize = 32
     # TAGE Parameters
     pred.tage=LTAGE_TAGE()
+    """
+    # Overriding the internal TAGE sturcture from here can break internal invariants.
+    # Use the safe config in this function, if you really need to customize the number of tables, further modifications needed.
     pred.tage.nHistoryTables = 6
     pred.tage.tagTableTagWidths = [0, 7, 7, 8, 8, 9, 9]
     pred.tage.logTagTableSizes = [0, 7, 7, 8, 8, 7, 7]
     pred.tage.logUResetPeriod = 11
     pred.tage.tagTableCounterBits = 3
     pred.tage.tagTableUBits = 2
+    """
     # Loop parameters
     pred.loop_predictor = LoopPredictor() # Loop predictor
     pred.loop_predictor.loopTableTagBits = 10
@@ -188,7 +192,7 @@ def create_TAGE_SC_L_LoopPredictor():
     pred.initialLoopIter = 0
     pred.initialLoopAge = 7
     pred.optionalAgeReset = False
-    return pref
+    return pred
 
 def create_TAGE_SC_L_64KB_StatisticalCorrector():
     pred=TAGE_SC_L_64KB_StatisticalCorrector()
@@ -362,7 +366,7 @@ def create_MPP_LoopPredictor():
     pred.restrictAllocation = True
     pred.logSizeLoopPred = 6
     pred.loopTableTagBits = 10
-
+    return pred
 
 def create_MPP_StatisticalCorrector():
     pred=MPP_StatisticalCorrector()
