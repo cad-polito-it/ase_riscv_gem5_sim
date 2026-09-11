@@ -92,6 +92,7 @@ component_target_exists() {
 install_native_component() {
     local component="$1"
     local script_name="${component}"
+    [[ "${component}" == "toolchain" ]] && script_name="riscv-toolchain"
     [[ "${component}" == "visualizer" ]] && script_name="gem5-visualizer"
     if component_target_exists "${component}"; then
         echo "${component} is already installed; skipping."
