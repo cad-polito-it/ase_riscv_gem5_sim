@@ -1,0 +1,14 @@
+{
+  "cpu": "in-order",
+  "intAlu": 1,
+  "intMul": 3,
+  "intDiv": 8,
+  "floatAlu": 2,
+  "floatMul": 5,
+  "floatDiv": 8,
+  "forwarding": true,
+  "memoryMode": "direct",
+  "instructionMemoryLatency": 1,
+  "dataReadLatency": 1,
+  "dataWriteLatency": 1
+}

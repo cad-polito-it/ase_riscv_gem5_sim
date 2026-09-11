@@ -49,9 +49,9 @@ from gem5.simulate.exit_event import ExitEvent
 from gem5.simulate.simulator import Simulator
 # Utilities included with m5 for configuring common simulations
 # from gem5/configs/common
-import Options
-import Simulation
-from Caches import L1_ICache, L1_DCache
+from common import Options
+from common import Simulation
+from common.Caches import L1_ICache, L1_DCache
 from m5.objects import Cache
 from common import SimpleOpts
 from m5 import trace
@@ -93,7 +93,10 @@ class L1Cache(Cache):
 
     def __init__(self, options=None):
         super(L1Cache, self).__init__()
-        pass
+        if options:
+            self.tag_latency = options.ase_cache_latency
+            self.data_latency = options.ase_cache_latency
+            self.response_latency = options.ase_cache_latency
 
     def connectBus(self, bus):
         """Connect this cache to a memory-side bus"""
@@ -236,7 +239,7 @@ def create_cpu(options, cpu_id):
     # ****************************
     # - FETCH STAGE
     # ****************************
-    the_cpu.fetchWidth = 2
+    the_cpu.fetchWidth = options.ase_fetch_width
     the_cpu.fetchBufferSize = 16
     the_cpu.fetchQueueSize = 32
     the_cpu.smtNumFetchingThreads = 1
@@ -248,7 +251,7 @@ def create_cpu(options, cpu_id):
     # ****************************
     # - DECODE STAGE
     # ****************************
-    the_cpu.decodeWidth = 2
+    the_cpu.decodeWidth = options.ase_decode_width
     # possible values "Dynamic", "Partitioned", "Threshold"
     the_cpu.smtROBPolicy = "Partitioned"
     the_cpu.smtROBThreshold = 100 
@@ -257,11 +260,11 @@ def create_cpu(options, cpu_id):
     # ****************************
     # - RENAME STAGE
     # ****************************
-    the_cpu.numROBEntries = 64
-    the_cpu.numIQEntries = 2000
+    the_cpu.numROBEntries = options.ase_rob_entries
+    the_cpu.numIQEntries = options.ase_iq_entries
     the_cpu.numPhysIntRegs = 80
     the_cpu.numPhysFloatRegs = 64
-    the_cpu.renameWidth = 2
+    the_cpu.renameWidth = options.ase_rename_width
     the_cpu.numRobs = 2000
     the_cpu.numPhysVecPredRegs = 32
     # most ISAs don't use condition-code regs, so default is 0
@@ -270,8 +273,8 @@ def create_cpu(options, cpu_id):
     # ****************************
     # - DISPATCH/ISSUE STAGE
     # ****************************
-    the_cpu.dispatchWidth = 2
-    the_cpu.issueWidth = 2
+    the_cpu.dispatchWidth = options.ase_dispatch_width
+    the_cpu.issueWidth = options.ase_issue_width
     
     # ****************************
     # - EXECUTE STAGE
@@ -282,31 +285,42 @@ def create_cpu(options, cpu_id):
     # ********************************
     class CPU_IntALU(IntALU):
         opList = [
-            OpDesc(opClass="IntAlu", opLat=1, pipelined=False)
+            OpDesc(opClass="IntAlu", opLat=options.ase_int_alu_latency,
+                   pipelined=options.ase_int_alu_pipelined == "on")
         ]
         count = 1
 
     class CPU_IntMultDiv(FUDesc):
         opList = [
-            OpDesc(opClass="IntMult", opLat=3, pipelined=False),
-            OpDesc(opClass="IntDiv", opLat=8, pipelined=False)
+            OpDesc(opClass="IntMult", opLat=options.ase_int_mul_latency,
+                   pipelined=options.ase_int_mul_pipelined == "on"),
+            OpDesc(opClass="IntDiv", opLat=options.ase_int_div_latency,
+                   pipelined=options.ase_int_div_pipelined == "on")
         ]
-        count = 0
+        count = 1
     class CPU_FP_ALU(FP_ALU):
         opList = [
-            OpDesc(opClass="FloatAdd", opLat=6, pipelined=True),
-            OpDesc(opClass="FloatCmp", opLat=6, pipelined=True),
-            OpDesc(opClass="FloatCvt", opLat=6, pipelined=True),     
+            OpDesc(opClass="FloatAdd", opLat=options.ase_float_alu_latency,
+                   pipelined=options.ase_float_alu_pipelined == "on"),
+            OpDesc(opClass="FloatCmp", opLat=options.ase_float_alu_latency,
+                   pipelined=options.ase_float_alu_pipelined == "on"),
+            OpDesc(opClass="FloatCvt", opLat=options.ase_float_alu_latency,
+                   pipelined=options.ase_float_alu_pipelined == "on"),
         ]
         count = 1
 
     class CPU_FP_MultDiv(FP_MultDiv):
         opList = [
-            OpDesc(opClass="FloatMult", opLat=8, pipelined=True),
-            OpDesc(opClass="FloatMultAcc", opLat=8, pipelined=True),
-            OpDesc(opClass="FloatDiv", opLat=4, pipelined=True),
-            OpDesc(opClass="FloatSqrt", opLat=4, pipelined=True),
-            OpDesc(opClass="FloatMisc", opLat=4, pipelined=True),
+            OpDesc(opClass="FloatMult", opLat=options.ase_float_mul_latency,
+                   pipelined=options.ase_float_mul_pipelined == "on"),
+            OpDesc(opClass="FloatMultAcc", opLat=options.ase_float_mul_latency,
+                   pipelined=options.ase_float_mul_pipelined == "on"),
+            OpDesc(opClass="FloatDiv", opLat=options.ase_float_div_latency,
+                   pipelined=options.ase_float_div_pipelined == "on"),
+            OpDesc(opClass="FloatSqrt", opLat=options.ase_float_div_latency,
+                   pipelined=options.ase_float_div_pipelined == "on"),
+            OpDesc(opClass="FloatMisc", opLat=options.ase_float_alu_latency,
+                   pipelined=options.ase_float_alu_pipelined == "on"),
         ]
         count = 1
 
@@ -383,9 +397,9 @@ def create_cpu(options, cpu_id):
     # ****************************
     # - WRITE/Memory STAGE
     # ****************************
-    the_cpu.wbWidth = 1
-    the_cpu.LQEntries = 32
-    the_cpu.SQEntries = 32
+    the_cpu.wbWidth = options.ase_writeback_width
+    the_cpu.LQEntries = options.ase_lq_entries
+    the_cpu.SQEntries = options.ase_sq_entries
     # Number of places to shift addr before check
     the_cpu.LSQDepCheckShift = 4 
     # Should dependency violations be checked for loads & stores or just stores
@@ -404,12 +418,15 @@ def create_cpu(options, cpu_id):
     # ****************************
     # - COMMIT STAGE
     # ****************************
-    the_cpu.commitWidth = 2
-    the_cpu.squashWidth = 2
+    the_cpu.commitWidth = options.ase_commit_width
+    the_cpu.squashWidth = options.ase_commit_width
     # Time buffer size for backwards communication
-    the_cpu.backComSize = 10 
+    # Functional-unit and memory completions can arrive well beyond the old
+    # ten-cycle communication window.  A larger window prevents IEW from
+    # indexing beyond TimeBuffer when a load or a long-latency FP op returns.
+    the_cpu.backComSize = 256
     # Time buffer size for forward communication
-    the_cpu.forwardComSize = 10
+    the_cpu.forwardComSize = 256
     return the_cpu
 
 # run the gem5 simulation
@@ -451,39 +468,49 @@ def run_system_with_cpu(
     system.mem_mode = "timing"
     system.mem_ranges = [AddrRange(options.mem_size)]
     system.cpu = create_cpu(options,0)
-    system.cpu.mmu.pma_checker.uncacheable=system.mem_ranges[0]
-    for cpu in system.cpu:
-        cpu.icache = L1ICache(options)
-        cpu.dcache = L1DCache(options)
-        cpu.icache.connectCPU(cpu)
-        cpu.dcache.connectCPU(cpu)
-    
-    # Create a memory bus, a coherent crossbar, in this case
-    system.l2bus = L2XBar()
-
-    # Hook the CPU ports up to the l2bus
-    for cpu in system.cpu:
-        cpu.icache.connectBus(system.l2bus)
-        cpu.dcache.connectBus(system.l2bus)
-
-    # Create an L2 cache and connect it to the l2bus
-    system.l2cache = L2Cache(options)
-    system.l2cache.connectCPUSideBus(system.l2bus)
-
-    # Create a memory bus
     system.membus = SystemXBar()
-
-    # Connect the L2 cache to the membus
-    system.l2cache.connectMemSideBus(system.membus)
+    if options.ase_memory_mode != "cache":
+        # Keep Direct mode deterministic: the configured delay is the full
+        # memory-system latency rather than a delay plus hidden bus cycles.
+        system.membus.forward_latency = 0
+        system.membus.frontend_latency = 0
+        system.membus.header_latency = 0
+        system.membus.response_latency = 0
     for cpu in system.cpu:
         cpu.createInterruptController()
-    # Connect the system up to the membus
     system.system_port = system.membus.cpu_side_ports
 
-    # Create a DDR3 memory controller
-    system.mem_ctrl = MemCtrl()
-    system.mem_ctrl.dram = DDR3_1600_8x8()
-    system.mem_ctrl.dram.range = system.mem_ranges[0]
+    if options.ase_memory_mode == "cache":
+        for cpu in system.cpu:
+            cpu.icache = L1ICache(options)
+            cpu.dcache = L1DCache(options)
+            cpu.icache.connectCPU(cpu)
+            cpu.dcache.connectCPU(cpu)
+            cpu.icache.connectBus(system.membus)
+            cpu.dcache.connectBus(system.membus)
+        system.mem_ctrl = SimpleMemory(
+            range=system.mem_ranges[0],
+            latency=f"{options.ase_memory_latency}ns",
+            latency_var="0ns", bandwidth="1000GiB/s")
+    else:
+        # Fetch/execute already contribute the first architectural cycle.
+        # Delay elements model only the configured cycles beyond that stage.
+        instruction_latency = max(0, options.ase_instruction_memory_latency - 1)
+        data_read_latency = max(0, options.ase_data_read_latency - 1)
+        data_write_latency = max(0, options.ase_data_write_latency - 1)
+        system.instruction_delay = SimpleMemDelay(
+            read_resp=f"{instruction_latency}ns")
+        system.data_delay = SimpleMemDelay(
+            read_resp=f"{data_read_latency}ns",
+            write_resp=f"{data_write_latency}ns")
+        for cpu in system.cpu:
+            cpu.icache_port = system.instruction_delay.cpu_side_port
+            cpu.dcache_port = system.data_delay.cpu_side_port
+        system.instruction_delay.mem_side_port = system.membus.cpu_side_ports
+        system.data_delay.mem_side_port = system.membus.cpu_side_ports
+        system.mem_ctrl = SimpleMemory(
+            range=system.mem_ranges[0], latency="0ns", latency_var="0ns",
+            bandwidth="1000GiB/s")
     system.mem_ctrl.port = system.membus.mem_side_ports
 
     system.workload = RiscvSEWorkload.init_compatible(process.executable)
@@ -538,6 +565,36 @@ def get_options():
     # base output directory to use.
     # This takes precedence over gem5's built-in outdir option
     parser.add_argument("--directory", type=str, default="m5out")
+    parser.add_argument("--ase-int-alu-latency", type=int, default=1)
+    parser.add_argument("--ase-int-mul-latency", type=int, default=3)
+    parser.add_argument("--ase-int-div-latency", type=int, default=8)
+    parser.add_argument("--ase-float-alu-latency", type=int, default=6)
+    parser.add_argument("--ase-float-mul-latency", type=int, default=8)
+    parser.add_argument("--ase-float-div-latency", type=int, default=4)
+    parser.add_argument("--ase-int-alu-pipelined", choices=("on", "off"), default="on")
+    parser.add_argument("--ase-int-mul-pipelined", choices=("on", "off"), default="on")
+    parser.add_argument("--ase-int-div-pipelined", choices=("on", "off"), default="on")
+    parser.add_argument("--ase-float-alu-pipelined", choices=("on", "off"), default="on")
+    parser.add_argument("--ase-float-mul-pipelined", choices=("on", "off"), default="on")
+    parser.add_argument("--ase-float-div-pipelined", choices=("on", "off"), default="off")
+    parser.add_argument("--ase-cache-stalls", choices=("on", "off"), default="on")
+    parser.add_argument("--ase-memory-mode", choices=("direct", "cache"), default="direct")
+    parser.add_argument("--ase-instruction-memory-latency", type=int, default=1)
+    parser.add_argument("--ase-data-read-latency", type=int, default=1)
+    parser.add_argument("--ase-data-write-latency", type=int, default=1)
+    parser.add_argument("--ase-cache-latency", type=int, default=2)
+    parser.add_argument("--ase-memory-latency", type=int, default=30)
+    parser.add_argument("--ase-fetch-width", type=int, default=2)
+    parser.add_argument("--ase-decode-width", type=int, default=2)
+    parser.add_argument("--ase-rename-width", type=int, default=2)
+    parser.add_argument("--ase-dispatch-width", type=int, default=2)
+    parser.add_argument("--ase-issue-width", type=int, default=2)
+    parser.add_argument("--ase-writeback-width", type=int, default=1)
+    parser.add_argument("--ase-commit-width", type=int, default=2)
+    parser.add_argument("--ase-rob-entries", type=int, default=64)
+    parser.add_argument("--ase-iq-entries", type=int, default=128)
+    parser.add_argument("--ase-lq-entries", type=int, default=32)
+    parser.add_argument("--ase-sq-entries", type=int, default=32)
 
     parser.set_defaults(
         # Default to writing to program.out in the current working directory

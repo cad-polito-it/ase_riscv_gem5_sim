@@ -53,6 +53,9 @@ Mkfile.old
 dkms.conf
 
 results/
+submissions/
+.ase-studio-env.json
+/ASE Studio.desktop
 __pycache__/
 gem5/__pycache__/
 
