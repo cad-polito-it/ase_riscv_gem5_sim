@@ -1,6 +1,7 @@
 CC ?= gcc
 OBJDUMP ?= objdump
-CFLAGS := $$OPTIMIZATION_FLAGS -mcmodel=medlow -march=rv32imf -mabi=ilp32 -mno-relax -Wall -Wextra -nostartfiles
+ASE_RISCV_MARCH ?= rv32imafd_zicsr_zifencei
+CFLAGS := $$OPTIMIZATION_FLAGS -mcmodel=medlow -march=$(ASE_RISCV_MARCH) -mabi=ilp32 -mno-relax -Wall -Wextra -nostdlib
 TARGET = $$program.elf
 
 all: $(TARGET) $$program.dump

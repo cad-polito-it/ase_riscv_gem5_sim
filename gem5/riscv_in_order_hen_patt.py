@@ -390,13 +390,14 @@ if args.wait_gdb:
 root = Root(full_system=False, system=system)
 
 if args.ase_memory_mode == "cache":
-    for cache in (system.cpu[0].icache_port, system.cpu[0].dcache_port):
+    # Configure the Cache SimObjects themselves. ``icache_port`` and
+    # ``dcache_port`` are only PortRef connections; assigning latency fields
+    # to those references creates unused Python attributes and leaves gem5's
+    # cache parameters at their defaults.
+    for cache in (system.cpu[0].icache, system.cpu[0].dcache):
         cache.data_latency = args.ase_cache_latency
         cache.tag_latency = args.ase_cache_latency
         cache.response_latency = args.ase_cache_latency
-    system.cpu[0].icache_port.clk_domain = system.clk_domain
-    system.cpu[0].dcache_port.clk_domain = system.clk_domain
-    system.cpu[0].dcache_port.peer.clk_domain = system.clk_domain
-    system.cpu[0].icache_port.peer.clk_domain = system.clk_domain
+        cache.clk_domain = system.clk_domain
 
 Simulation.run(args, root, system, FutureClass)

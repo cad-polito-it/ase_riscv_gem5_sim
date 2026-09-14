@@ -9,6 +9,7 @@ unchanged: .word 99
 # Make _start visible as the point where the program begins.
 .globl _start
 _start:
+
     # Watch counter and values change; unchanged remains selectable too.
     la   x5, counter
     lw   x6, 0(x5)

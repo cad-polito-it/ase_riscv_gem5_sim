@@ -1,6 +1,6 @@
 .section .data
-.align 4
-inputs:  .float 6.0, 2.0
+
+inputs:  .float 6.8, 2.1
 results: .float 0.0, 0.0, 0.0
 
 # The text section contains the instructions that the CPU runs.
@@ -8,6 +8,7 @@ results: .float 0.0, 0.0, 0.0
 # Make _start visible as the point where the program begins.
 .globl _start
 _start:
+
     # The three FP operations use different configured unit latencies.
     la     x5, inputs
     flw    f1, 0(x5)
