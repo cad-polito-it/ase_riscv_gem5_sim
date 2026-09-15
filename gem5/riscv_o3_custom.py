@@ -235,7 +235,13 @@ def create_cpu(options, cpu_id):
     # ****************************
     # predictors from src/cpu/pred/BranchPredictor.py
     # see create_predictors for choosing a predictor
-    the_cpu.branchPred = predictor.create_LocalBP()
+    branch_predictors = {
+        "local": predictor.create_LocalBP,
+        "tournament": predictor.create_TournamentBP,
+        "bimode": predictor.create_BiModeBP,
+        "tage": predictor.create_TAGE,
+    }
+    the_cpu.branchPred = branch_predictors[options.ase_branch_predictor]()
     # ****************************
     # - FETCH STAGE
     # ****************************
@@ -589,12 +595,17 @@ def get_options():
     parser.add_argument("--ase-rename-width", type=int, default=2)
     parser.add_argument("--ase-dispatch-width", type=int, default=2)
     parser.add_argument("--ase-issue-width", type=int, default=2)
-    parser.add_argument("--ase-writeback-width", type=int, default=1)
+    parser.add_argument("--ase-writeback-width", type=int, default=2)
     parser.add_argument("--ase-commit-width", type=int, default=2)
     parser.add_argument("--ase-rob-entries", type=int, default=64)
     parser.add_argument("--ase-iq-entries", type=int, default=128)
     parser.add_argument("--ase-lq-entries", type=int, default=32)
     parser.add_argument("--ase-sq-entries", type=int, default=32)
+    parser.add_argument(
+        "--ase-branch-predictor",
+        choices=("local", "tournament", "bimode", "tage"),
+        default="local",
+    )
 
     parser.set_defaults(
         # Default to writing to program.out in the current working directory
