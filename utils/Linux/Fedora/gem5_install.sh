@@ -11,7 +11,8 @@ if [[ -f "${ROOT_DIR}/gem5/.git" ]]; then
 	exit 0
 else
     echo "Downloading gem5 tool"
-    git clone ${GEM_5_REPOSITORY} ${ROOT_DIR}/gem5
+    git clone --branch "${GEM5_REQUIRED_BRANCH}" --single-branch \
+        "${GEM_5_REPOSITORY}" "${ROOT_DIR}/gem5"
 fi
 ##############################################################################
 

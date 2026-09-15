@@ -20,11 +20,11 @@ This README provides an environment for simulating a program on a parametrizable
 ## Setup the environment 
 First of all, you need to clone the repository with the following command, for SSH:
 ```
-$ git clone git@github.com:cad-polito-it/ase_riscv_gem5_sim.git
+$ git clone --branch ase_studio --recurse-submodules git@github.com:cad-polito-it/ase_riscv_gem5_sim.git
 ```
 For HTTPS:
 ```
-$ git clone https://github.com/cad-polito-it/ase_riscv_gem5_sim.git
+$ git clone --branch ase_studio --recurse-submodules https://github.com/cad-polito-it/ase_riscv_gem5_sim.git
 ```
 
 ### Prerequisites
@@ -72,7 +72,7 @@ You can compile from scratch the toolchain and the necessary dependencies for Ri
 
 Start by cloning gem5 from this repository:
 ```
-$ git clone https://github.com/cad-polito-it/gem5
+$ git clone --branch fix/minor-store-source-version https://github.com/cad-polito-it/gem5
 ```
 
 To install Gem5 and the necessary dependencies, you can follow the README of that repo as well as these [instructions](https://www.gem5.org/documentation/general_docs/building).
@@ -147,7 +147,7 @@ configuration in `setup_default`; Qt is not required. When cloning this
 repository, initialize the submodule as well:
 
 ```bash
-git clone --recurse-submodules https://github.com/cad-polito-it/ase_riscv_gem5_sim.git
+git clone --branch ase_studio --recurse-submodules https://github.com/cad-polito-it/ase_riscv_gem5_sim.git
 cd ase_riscv_gem5_sim
 git submodule update --init --recursive
 ```

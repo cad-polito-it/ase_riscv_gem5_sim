@@ -7,6 +7,13 @@ UTILS_DIR="${WORK_DIR}/utils"
 OS="$(uname -s)"
 ARCH="$(uname -m)"
 ASE_STUDIO_REPOSITORY="https://github.com/cad-polito-it/ase-studio.git"
+BRANCH_CONFIG="${WORK_DIR}/ase_studio_branches.json"
+if [[ ! -f "${BRANCH_CONFIG}" ]]; then
+    echo "Missing ASE Studio branch configuration: ${BRANCH_CONFIG}" >&2
+    exit 1
+fi
+GEM5_REQUIRED_BRANCH="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8"))["gem5"])' "${BRANCH_CONFIG}")"
+export GEM5_REQUIRED_BRANCH
 export WORK_DIR ROOT_DIR UTILS_DIR OS ARCH
 
 usage() {
