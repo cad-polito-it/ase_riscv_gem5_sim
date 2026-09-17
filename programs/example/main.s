@@ -1,17 +1,24 @@
 .section .data
-.align 4
-input_value: .word 41
+counter:   .word 3
+values:    .word 10, 20, 0
+unchanged: .word 99
 
 # The text section contains the instructions that the CPU runs.
 .section .text
 # Make _start visible as the point where the program begins.
 .globl _start
 _start:
-    # A load-use RAW hazard can remain even when ALU forwarding is enabled.
-    la   x5, input_value
+
+    la   x5, counter
     lw   x6, 0(x5)
-    addi x7, x6, 1
-    add  x8, x7, x6
+    addi x6, x6, 1
+    sw   x6, 0(x5)
+
+    la   x7, values
+    lw   x8, 0(x7)
+    lw   x9, 4(x7)
+    add  x10, x8, x9
+    sw   x10, 8(x7)
 
 # The End block stops the program and returns control to the simulator.
 End:

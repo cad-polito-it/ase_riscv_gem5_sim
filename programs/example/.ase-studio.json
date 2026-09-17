@@ -1,10 +1,10 @@
 {
-  "cpu": "out-of-order",
+  "cpu": "in-order",
   "intAlu": 1,
-  "intMul": 1,
-  "intDiv": 1,
-  "floatAlu": 4,
-  "floatMul": 8,
+  "intMul": 3,
+  "intDiv": 8,
+  "floatAlu": 2,
+  "floatMul": 5,
   "floatDiv": 8,
   "intAluPipelined": true,
   "intMulPipelined": true,
@@ -14,7 +14,7 @@
   "floatDivPipelined": false,
   "forwarding": true,
   "compressedInstructions": false,
-  "floatingPointPrecision": "double",
+  "floatingPointPrecision": "single",
   "memoryMode": "direct",
   "cacheStalls": false,
   "instructionMemoryLatency": 1,
@@ -43,8 +43,8 @@
     "cdb",
     "commit"
   ],
-  "branchPredictor": "ideal",
+  "branchPredictor": "local",
   "speculativeExecution": true,
   "outOfOrderExecution": true,
-  "o3EvaluationLabel": "Loop"
+  "o3EvaluationLabel": ""
 }
