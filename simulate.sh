@@ -6,10 +6,9 @@ usage () {
 	echo "OPTIONS: "
 	echo "-s path to the setup file (default ./setup_default)"
 	echo "-i path to program folder"
-	echo "-gui|-nogui (mutually exclusive) the gem5 is|not going to be visuallized by the pipeline visualizer"
 	echo ""
 	echo "Example: "
-	echo "./simulate.sh ./programs/my_fancy_c_benchmark -nogui"
+	echo "./simulate.sh ./programs/my_fancy_c_benchmark"
 	echo "it will search in the folder ./programs/my_fancy_c_benchmark"
 	echo "for a recipe in a Makefile to compile, and create an executable file called my_fancy_c_benchmark.elf."
 	echo "Afterward, it executed the architectural simulation with gem5."
@@ -17,7 +16,6 @@ usage () {
 }
 
 ## arguments parsing 
-use_gui=false
 program_folder=""
 program_folder_opt=false
 interactive=true
@@ -40,16 +38,6 @@ else
 fi
 interactive=false
 shift
-;;
--gui)
-use_gui=true
-interactive=false
-shift 
-;;
--nogui)
-use_gui=false
-interactive=false
-shift 
 ;;
 -s|--setup)
 shift
@@ -92,11 +80,6 @@ done
 program_folder=./programs/${program}
 program_folder_opt=true
 
-
-# ask for intersections
-read -p "Use GUI [yN]: " -n 1 -r
-[[ $REPLY =~ ^[Yy]$ ]] && use_gui=true || use_gui=false
-echo
 
 fi # interactive
 
@@ -162,10 +145,3 @@ if [[ $? -ne 0 ]] ; then
 	echo -e "\e[31mSimulation error\e[0m"
 	exit 1
 fi
-
-# Launch Pipeline visualizer
-if ${use_gui}; then
-	echo "${PIPELINE_VISUALIZER} ${trace_out_file}"
-	${PIPELINE_VISUALIZER} ${trace_out_file} 2> /dev/null
-fi
-
