@@ -11,8 +11,6 @@ This README provides an environment for simulating a program on a parametrizable
   - [Setup the environment](#setup-the-environment)
     - [Prerequisites](#prerequisites)
     - [Installing a Risc-V toolchain, the cross-compiler](#installing-a-risc-v-toolchain-the-cross-compiler)
-    - [Installing Gem5, the Architectural Simulator](#installing-gem5-the-architectural-simulator)
-    - [Installing Konata, the Pipeline Visualizer](#installing-konata-the-pipeline-visualizer)
   - [HOWTO - Simulate a Program](#howto---simulate-a-program)
   - [HOWTO - Visualize the Pipeline with Konata](#howto---visualize-the-pipeline-with-konata)
   - [Contributors](#contributors)
@@ -20,21 +18,19 @@ This README provides an environment for simulating a program on a parametrizable
 ## Setup the environment 
 First of all, you need to clone the repository with the following command, for SSH:
 ```
-$ git clone git@github.com:cad-polito-it/ase_riscv_gem5_sim.git
+$ git clone --recurse-submodules git@github.com:cad-polito-it/ase_riscv_gem5_sim.git
 ```
 For HTTPS:
 ```
-$ git clone https://github.com/cad-polito-it/ase_riscv_gem5_sim.git
+$ git clone --recurse-submodules https://github.com/cad-polito-it/ase_riscv_gem5_sim.git
 ```
 
 ### Prerequisites
-In order to simulate a program, you need the following three tools:
+In order to simulate a program, you need the following two core tools:
 - A Risc-V cross compiler
-- An architectural simulator
-- A pipeline visualizer
+- An architectural simulator (gem5)
 
-Installation guidelines are provided for each of the aforementioned tools.
-In case you are using LABINF PCs, you can skip the installation part.
+The pipeline visualizer is provided by ASE Studio (GTK/WebKit frontend).
 
 An important file for the simulation flow is the [```setup_default```](./setup_default).
 In this file you need to specify you installation paths for different tools.
@@ -58,7 +54,7 @@ In the repository, you can find a script named [```installation.sh```](./utils/i
 ```bash
 $ ./utils/installation.sh
 ```
-It will install the cross-compiler, gem5 and the pipeline visualizer in a default folder  named ```./tools/```. 
+It will install the cross-compiler and gem5 in a default folder named ```./tools/```. 
 
 **It automatically updates the ```setup_default``` file with the correct paths.**
 
@@ -72,7 +68,7 @@ You can compile from scratch the toolchain and the necessary dependencies for Ri
 
 Start by cloning gem5 from this repository:
 ```
-$ git clone https://github.com/cad-polito-it/gem5
+$ git clone --branch fix/minor-store-source-version https://github.com/cad-polito-it/gem5
 ```
 
 To install Gem5 and the necessary dependencies, you can follow the README of that repo as well as these [instructions](https://www.gem5.org/documentation/general_docs/building).
@@ -81,46 +77,12 @@ Just remember that you need the following Gem5 characteristics to install:
 - ISA = RISCV.
 - variant = opt.
 
-#### Installing the Gem5 Pipeline Visualizer
-$\color{Red}\Huge{\textsf{This section is for the In order Architecture}}$
-
-To install the Gem5 Pipeline Visualizer, you can follow these [instructions](https://github.com/cad-polito-it/gem5_visualizer).
-
-You need to install Qt 6.8.3 (**VERY IMPORTANT**) from [here](https://www.qt.io/download-qt-installer). 
-You can follow [these instructions](https://doc.qt.io/qt-6/gettingstarted.html) for the installation.
-
-Make sure to install the desktop version and the needed libraries, as well cmake as shown in the following:
-
-![custom](.images/custom.png "Custom QT installation")
-![what](.images/qt_what.png "What to select in the QT installation")
-
-After installing Qt, you need to set the ```QT_INSTALLATION_DIR``` environment variable to point to the Qt installation directory. By default should be like the following:
-```bash
-export QT_INSTALLATION_DIR="/opt/Qt/6.8.3/gcc_64"
-```
-
-Then, you can run the ```installation.sh``` script that will download and compile the Gem5 Pipeline Visualizer.
-
-#### Installing Konata, the Pipeline Visualizer
-
-$\color{Red}\Huge{\textsf{This section is for the Out of Order (OoO) Architecture}}$
-
-To download Konata, visit the Konata's [repository](https://github.com/shioyadan/Konata/releases)
-
-Download the appropriate Konata release for your operating system. Konata is available for various platforms, including Windows, macOS, and Linux.
-
-Unzip the release, inside you will find an executable named ```konata``` or ```konata.exe``` (**OS dependent!**).
-
-**Be aware**: You need load the trace manually
-
 ## HOWTO - Simulate a Program
 
 To simulate a program, run the `simulate.sh` script with the desired program as an argument, and the desired configuration file:  
 ```bash
-./simulate.sh -i ./programs/sanity_test/ -nogui --setup ./setup_default
+./simulate.sh -i ./programs/sanity_test/ --setup ./setup_default
 ```
-
-You can specify with `-gui `or `-nogui `the automatic opening of the Pipeline visualizer.
 
 This will produce an ELF (Executable and Linkable Format) file in the `programs/sanity_test/` directory.
 Afterward, the ELF is passed to the Architectural Simulator, and program-related statistics (```stats.txt```) and trace (```trace.out```)are dumped in ```./results/sanity_test/```
@@ -138,6 +100,28 @@ For adding a new program, you can follow the steps below:
     ```makefile
     ASM = ./program2.s # Removed ./program1.s
     ```
+
+## ASE Studio 
+
+ASE Studio is a lightweight teaching IDE distributed in the `ase_studio`
+submodule. It uses GTK WebKit and the existing RISC-V compiler/gem5
+configuration in `setup_default`. When cloning this
+repository, initialize the submodule as well:
+
+```bash
+git clone --recurse-submodules https://github.com/cad-polito-it/ase_riscv_gem5_sim.git
+cd ase_riscv_gem5_sim
+git submodule update --init --recursive
+```
+
+On Ubuntu or Debian, install the native GUI dependencies and the per-user
+application launcher, then start Studio:
+
+```bash
+sudo apt install python3-gi gir1.2-gtk-3.0 gir1.2-webkit2-4.1
+./ase_studio/install.sh
+./ase-studio.sh
+```
 
 ## Contributors
 - Francesco Angione (francesco.angione@polito.it)

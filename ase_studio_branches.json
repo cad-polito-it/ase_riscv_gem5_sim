@@ -1,0 +1,4 @@
+{
+  "simulator": "ase_studio",
+  "gem5": "fix/minor-store-source-version"
+}

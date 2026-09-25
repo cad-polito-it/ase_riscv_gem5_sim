@@ -79,20 +79,13 @@ from common.cpu2000 import *
 INTEGER_ALU_LATENCY = 1
 INTEGER_MUL_LATENCY = 1
 INTEGER_DIV_LATENCY = 1
-FLOAT_ALU_LATENCY = 3
-FLOAT_MUL_LATENCY = 5
-FLOAT_DIV_LATENCY = 5
+FLOAT_ALU_LATENCY = 2
+FLOAT_MUL_LATENCY = 7
+FLOAT_DIV_LATENCY = 8
 
-# The issue latency is the number of cycles until another instruction can be issued 
-# to the functional unit after an instruction has already been issued.
-# The INTEGER_ALU_ISSUE_LATENCY controls also the issue latency of the memory
-# address calculation
-INTEGER_ALU_ISSUE_LATENCY = 0
-INTEGER_MUL_ISSUE_LATENCY = 0
-INTEGER_DIV_ISSUE_LATENCY = 0
-FLOAT_ALU_ISSUE_LATENCY = 0
-FLOAT_MUL_ISSUE_LATENCY = 0
-FLOAT_DIV_ISSUE_LATENCY = FLOAT_DIV_LATENCY
+# A pipelined unit has an issue latency of one cycle. A non-pipelined unit's
+# issue latency equals its operation latency, so it must finish before the next
+# operation can enter that unit.
 
 
 
@@ -140,6 +133,26 @@ def get_process(args):
 parser = argparse.ArgumentParser()
 Options.addCommonOptions(parser)
 Options.addSEOptions(parser)
+parser.add_argument("--ase-int-alu-latency", type=int, default=INTEGER_ALU_LATENCY)
+parser.add_argument("--ase-int-mul-latency", type=int, default=INTEGER_MUL_LATENCY)
+parser.add_argument("--ase-int-div-latency", type=int, default=INTEGER_DIV_LATENCY)
+parser.add_argument("--ase-float-alu-latency", type=int, default=FLOAT_ALU_LATENCY)
+parser.add_argument("--ase-float-mul-latency", type=int, default=FLOAT_MUL_LATENCY)
+parser.add_argument("--ase-float-div-latency", type=int, default=FLOAT_DIV_LATENCY)
+parser.add_argument("--ase-int-alu-pipelined", choices=("on", "off"), default="on")
+parser.add_argument("--ase-int-mul-pipelined", choices=("on", "off"), default="on")
+parser.add_argument("--ase-int-div-pipelined", choices=("on", "off"), default="on")
+parser.add_argument("--ase-float-alu-pipelined", choices=("on", "off"), default="on")
+parser.add_argument("--ase-float-mul-pipelined", choices=("on", "off"), default="on")
+parser.add_argument("--ase-float-div-pipelined", choices=("on", "off"), default="off")
+parser.add_argument("--ase-forwarding", choices=("auto", "on", "off"), default="auto")
+parser.add_argument("--ase-cache-stalls", choices=("auto", "on", "off"), default="auto")
+parser.add_argument("--ase-memory-mode", choices=("direct", "cache"), default="direct")
+parser.add_argument("--ase-instruction-memory-latency", type=int, default=1)
+parser.add_argument("--ase-data-read-latency", type=int, default=1)
+parser.add_argument("--ase-data-write-latency", type=int, default=1)
+parser.add_argument("--ase-cache-latency", type=int, default=2)
+parser.add_argument("--ase-memory-latency", type=int, default=30)
 
 args = parser.parse_args()
 
@@ -199,7 +212,18 @@ system.cpu[0].executeIssueLimit = 2
 system.cpu[0].executeMemoryIssueLimit = 1
 system.cpu[0].decodeToExecuteForwardDelay = 1
 system.cpu[0].enableIdling = False
-system.cpu[0].fetch1LineWidth = 512
+# A configured latency of one cycle is represented by the pipeline stage
+# itself. Direct-1 uses MinorCPU's original wide fetch request so a cache-line
+# boundary does not introduce a fake memory delay. Slower Direct
+# memory requests words independently, while cache mode follows real lines.
+fetch_width = (4 if args.ase_memory_mode == "direct"
+               and args.ase_instruction_memory_latency > 1
+               else args.cacheline_size if args.ase_memory_mode == "cache"
+               else 512)
+system.cpu[0].fetch1LineWidth = fetch_width
+system.cpu[0].fetch1LineSnapWidth = (fetch_width if fetch_width == 4
+                                     else args.cacheline_size)
+system.cpu[0].enableForwarding = args.ase_forwarding != "off"
 
 #############################################################################
 # MODIFIABLE PART #
@@ -215,20 +239,20 @@ system.cpu[0].fetch1LineWidth = 512
 
 # The parameter opLat is the latency of the functional unit, i.e., the number of cycles it takes for the
 # functional unit to execute an instruction after it is issued.
-system.cpu[0].executeFuncUnits.funcUnits[0].opLat = INTEGER_ALU_LATENCY
-system.cpu[0].executeFuncUnits.funcUnits[1].opLat = INTEGER_MUL_LATENCY
-system.cpu[0].executeFuncUnits.funcUnits[2].opLat = INTEGER_DIV_LATENCY
-system.cpu[0].executeFuncUnits.funcUnits[3].opLat = FLOAT_ALU_LATENCY
-system.cpu[0].executeFuncUnits.funcUnits[4].opLat = FLOAT_MUL_LATENCY
-system.cpu[0].executeFuncUnits.funcUnits[5].opLat = FLOAT_DIV_LATENCY
+system.cpu[0].executeFuncUnits.funcUnits[0].opLat = args.ase_int_alu_latency
+system.cpu[0].executeFuncUnits.funcUnits[1].opLat = args.ase_int_mul_latency
+system.cpu[0].executeFuncUnits.funcUnits[2].opLat = args.ase_int_div_latency
+system.cpu[0].executeFuncUnits.funcUnits[3].opLat = args.ase_float_alu_latency
+system.cpu[0].executeFuncUnits.funcUnits[4].opLat = args.ase_float_mul_latency
+system.cpu[0].executeFuncUnits.funcUnits[5].opLat = args.ase_float_div_latency
 # The parameter issueLat controls the issue latency of the functional unit, i.e., the number of cycles
 # until another instruction can be issued to the functional unit after an instruction has already been issued.
-system.cpu[0].executeFuncUnits.funcUnits[0].issueLat = INTEGER_ALU_ISSUE_LATENCY
-system.cpu[0].executeFuncUnits.funcUnits[1].issueLat = INTEGER_MUL_ISSUE_LATENCY
-system.cpu[0].executeFuncUnits.funcUnits[2].issueLat = INTEGER_DIV_ISSUE_LATENCY
-system.cpu[0].executeFuncUnits.funcUnits[3].issueLat = FLOAT_ALU_ISSUE_LATENCY
-system.cpu[0].executeFuncUnits.funcUnits[4].issueLat = FLOAT_MUL_ISSUE_LATENCY
-system.cpu[0].executeFuncUnits.funcUnits[5].issueLat = FLOAT_DIV_ISSUE_LATENCY
+system.cpu[0].executeFuncUnits.funcUnits[0].issueLat = (1 if args.ase_int_alu_pipelined == "on" else args.ase_int_alu_latency)
+system.cpu[0].executeFuncUnits.funcUnits[1].issueLat = (1 if args.ase_int_mul_pipelined == "on" else args.ase_int_mul_latency)
+system.cpu[0].executeFuncUnits.funcUnits[2].issueLat = (1 if args.ase_int_div_pipelined == "on" else args.ase_int_div_latency)
+system.cpu[0].executeFuncUnits.funcUnits[3].issueLat = (1 if args.ase_float_alu_pipelined == "on" else args.ase_float_alu_latency)
+system.cpu[0].executeFuncUnits.funcUnits[4].issueLat = (1 if args.ase_float_mul_pipelined == "on" else args.ase_float_mul_latency)
+system.cpu[0].executeFuncUnits.funcUnits[5].issueLat = (1 if args.ase_float_div_pipelined == "on" else args.ase_float_div_latency)
 
 
 # The parameter timings is a list of MinorFUTiming objects, each of which specifies the latency of the
@@ -277,6 +301,28 @@ system.cpu[0].executeFuncUnits.funcUnits[3].timings[0].srcRegsRelativeLats = [
     0
 ]
 
+if args.ase_forwarding != "auto":
+    function_units = system.cpu[0].executeFuncUnits.funcUnits[:6]
+    # In MinorCPU a relative source latency is the number of cycles before
+    # write-back in which a dependent instruction may consume a forwarded
+    # result.  The previous configuration used zero for both modes, so the
+    # checkbox could not change scheduling.  With forwarding enabled, expose
+    # the producer result one cycle before write-back (or earlier for longer
+    # functional units); with it disabled, dependents wait for write-back.
+    blocked_sources = [] if args.ase_forwarding == "on" else list(range(6))
+    for function_unit in function_units:
+        function_unit.cantForwardFromFUIndices = blocked_sources
+        for timing in function_unit.timings:
+            # Decode is one stage ahead of execution.  A relative latency of
+            # one lets a dependent enter that stage on the producer's final
+            # execution cycle; blocking the producer FU forces write-back.
+            timing.srcRegsRelativeLats = [1] if args.ase_forwarding == "on" else [0]
+            if args.ase_forwarding == "off":
+                # The customized scoreboard records producer readiness at FU
+                # completion.  Add the E->M/W register-file distance only for
+                # non-forwarded results so consumers cannot issue at E.
+                timing.extraAssumedLat = int(timing.extraAssumedLat) + 1
+
 ##################################################################
 # END OF MODIFIABLE PART #
 ##################################################################
@@ -289,45 +335,52 @@ MemClass = Simulation.setMemClass(args)
 
 system.membus = SystemXBar()
 system.membus.clk_domain = system.clk_domain
-system.membus.forward_latency = 1
-system.membus.frontend_latency = 1
-system.membus.header_latency = 1
-system.membus.response_latency = 1
+system.membus.forward_latency = 1 if args.ase_memory_mode == "cache" else 0
+system.membus.frontend_latency = 1 if args.ase_memory_mode == "cache" else 0
+system.membus.header_latency = 1 if args.ase_memory_mode == "cache" else 0
+system.membus.response_latency = 1 if args.ase_memory_mode == "cache" else 0
 system.system_port = system.membus.cpu_side_ports
 
-CacheConfig.config_cache(args, system)
-
-MemConfig.config_mem(args, system)
+if args.ase_memory_mode == "cache":
+    CacheConfig.config_cache(args, system)
+    # A deterministic backing store makes the configured miss penalty a
+    # stable teaching parameter. Cache hit/miss behavior is still modeled by
+    # gem5's timing caches; only DRAM row/bank variability is omitted.
+    system.mem_ctrls = [SimpleMemory(
+        range=system.mem_ranges[0], latency=f"{args.ase_memory_latency}ns",
+        latency_var="0ns", bandwidth="1000GiB/s")]
+    system.mem_ctrls[0].port = system.membus.mem_side_ports
+else:
+    # MinorCPU normally requires caches through the common configuration
+    # helper, but its timing ports can connect directly to deterministic
+    # memory.  Independent delay elements model instruction reads, data
+    # reads, and data writes without pretending that a large cache is RAM.
+    system.cpu[0].createInterruptController()
+    # One architectural cycle is already occupied by F or M. These delays
+    # therefore model only cycles beyond that stage rather than adding a
+    # hidden extra cycle to every access.
+    instruction_latency = max(0, args.ase_instruction_memory_latency - 1)
+    data_read_latency = max(0, args.ase_data_read_latency - 1)
+    data_write_latency = max(0, args.ase_data_write_latency - 1)
+    system.instruction_delay = SimpleMemDelay(
+        read_resp=f"{instruction_latency}ns", clk_domain=system.clk_domain)
+    system.data_delay = SimpleMemDelay(
+        read_resp=f"{data_read_latency}ns",
+        write_resp=f"{data_write_latency}ns",
+        clk_domain=system.clk_domain)
+    system.cpu[0].icache_port = system.instruction_delay.cpu_side_port
+    system.cpu[0].dcache_port = system.data_delay.cpu_side_port
+    system.instruction_delay.mem_side_port = system.membus.cpu_side_ports
+    system.data_delay.mem_side_port = system.membus.cpu_side_ports
+    system.cpu[0].mmu.connectWalkerPorts(
+        system.membus.cpu_side_ports, system.membus.cpu_side_ports)
+    system.cpu[0].connectUncachedPorts(
+        system.membus.cpu_side_ports, system.membus.mem_side_ports)
+    system.mem_ctrls = [SimpleMemory(
+        range=system.mem_ranges[0], latency="0ns", latency_var="0ns",
+        bandwidth="1000GiB/s")]
+    system.mem_ctrls[0].port = system.membus.mem_side_ports
 config_filesystem(system, args)
-
-for memctrl in system.mem_ctrls:
-    memctrl.clk_domain = system.clk_domain
-    memctrl.dram.clk_domain = system.clk_domain
-    memctrl.static_frontend_latency = "0.001ns"
-    memctrl.static_backend_latency = "0.001ns"
-    memctrl.command_window = "0.001ns"
-    #        if isinstance(memctrl.dram, DRAMInterface):
-    memctrl.dram.tREFI = "1000000000000ns"
-    memctrl.dram.tBURST = "0.001ns"
-    memctrl.dram.tRCD = "0.001ns"
-    memctrl.dram.tRCD_WR = "0.001ns"
-    memctrl.dram.tCL = "0.001ns"
-    memctrl.dram.tCWL = "0.001ns"
-    memctrl.dram.tPPD = "0.001ns"
-    memctrl.dram.tRAS = "0.001ns"
-    memctrl.dram.tWR = "0.001ns"
-    memctrl.dram.tRFC = "0.001ns"
-    memctrl.dram.tRP = "0.001ns"
-    memctrl.dram.tRRD = "0.001ns"
-    memctrl.dram.tRTP = "0.001ns"
-    memctrl.dram.tWR = "0.001ns"
-    memctrl.dram.tWTR_L = "0.001ns"
-    memctrl.dram.tXAW = "0.001ns"
-    memctrl.dram.tXP = "0.001ns"
-    memctrl.dram.tXPDLL = "0.001ns"
-    memctrl.dram.tXS = "0.001ns"
-    memctrl.dram.tXSDLL = "0.001ns"
-    memctrl.dram.tCK = "0.001ns"
 
 system.workload = SEWorkload.init_compatible(mp0_path)
 
@@ -336,17 +389,15 @@ if args.wait_gdb:
 
 root = Root(full_system=False, system=system)
 
-system.cpu[0].icache_port.data_latency = "0.001ns"
-system.cpu[0].icache_port.tag_latency = "0.001ns"
-system.cpu[0].icache_port.response_latency = "0.001ns"
-system.cpu[0].dcache_port.data_latency = "0.001ns"
-system.cpu[0].dcache_port.tag_latency = "0.001ns"
-system.cpu[0].dcache_port.response_latency = "0.001ns"
-system.cpu[0].icache_port.clk_domain = system.clk_domain
-system.cpu[0].dcache_port.clk_domain = system.clk_domain
-system.cpu[0].icache_port.size = 8388608
-system.cpu[0].dcache_port.size = 8388608
-system.cpu[0].dcache_port.peer.clk_domain = system.clk_domain
-system.cpu[0].icache_port.peer.clk_domain = system.clk_domain
+if args.ase_memory_mode == "cache":
+    # Configure the Cache SimObjects themselves. ``icache_port`` and
+    # ``dcache_port`` are only PortRef connections; assigning latency fields
+    # to those references creates unused Python attributes and leaves gem5's
+    # cache parameters at their defaults.
+    for cache in (system.cpu[0].icache, system.cpu[0].dcache):
+        cache.data_latency = args.ase_cache_latency
+        cache.tag_latency = args.ase_cache_latency
+        cache.response_latency = args.ase_cache_latency
+        cache.clk_domain = system.clk_domain
 
 Simulation.run(args, root, system, FutureClass)
