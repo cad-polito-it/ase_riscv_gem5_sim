@@ -23,10 +23,8 @@ Usage: ./utils/installation.sh COMMAND
 Commands:
   toolchain   Install only the RISC-V GNU toolchain
   gem5        Install only the gem5 simulator
-  visualizer  Install only the legacy Qt pipeline visualizer
   ase-studio  Install ASE Studio and its native GTK launcher
   all-ase     Install toolchain, gem5, and ASE Studio
-  all-qt      Install toolchain, gem5, and the legacy Qt visualizer
 EOF
 }
 
@@ -37,18 +35,14 @@ choose_command() {
         "ASE Studio only" \
         "RISC-V toolchain only" \
         "gem5 only" \
-        "Legacy Qt visualizer only" \
-        "All with legacy Qt visualizer" \
         "Cancel"; do
         case "${REPLY}" in
             1) CHOSEN_COMMAND="all-ase"; return ;;
             2) CHOSEN_COMMAND="ase-studio"; return ;;
             3) CHOSEN_COMMAND="toolchain"; return ;;
             4) CHOSEN_COMMAND="gem5"; return ;;
-            5) CHOSEN_COMMAND="visualizer"; return ;;
-            6) CHOSEN_COMMAND="all-qt"; return ;;
-            7) exit 0 ;;
-            *) echo "Enter a number from 1 to 7." >&2 ;;
+            5) exit 0 ;;
+            *) echo "Enter a number from 1 to 5." >&2 ;;
         esac
     done
 }
@@ -91,7 +85,6 @@ component_target_exists() {
             return 1
             ;;
         gem5) [[ -x "${ROOT_DIR}/gem5/build/RISCV/gem5.opt" ]] ;;
-        visualizer) [[ -x "${ROOT_DIR}/gem5_pipeline_visualizer" ]] ;;
         *) return 1 ;;
     esac
 }
@@ -100,7 +93,6 @@ install_native_component() {
     local component="$1"
     local script_name="${component}"
     [[ "${component}" == "toolchain" ]] && script_name="riscv-toolchain"
-    [[ "${component}" == "visualizer" ]] && script_name="gem5-visualizer"
     if component_target_exists "${component}"; then
         echo "${component} is already installed; skipping."
         return
@@ -168,8 +160,6 @@ update_setup_default() {
     set_setup_export GEM5_SRC 'export GEM5_SRC="${WORK_DIR}/tools/gem5"'
     if [[ "${frontend}" == "ase" ]]; then
         set_setup_export PIPELINE_VISUALIZER 'export PIPELINE_VISUALIZER="${WORK_DIR}/ase-studio.sh"'
-    elif [[ "${frontend}" == "qt" ]]; then
-        set_setup_export PIPELINE_VISUALIZER 'export PIPELINE_VISUALIZER="${WORK_DIR}/tools/gem5_pipeline_visualizer"'
     fi
 }
 
@@ -185,7 +175,7 @@ if [[ -z "${command}" ]]; then
     fi
 fi
 case "${command}" in
-    toolchain|gem5|visualizer|ase-studio|all-ase|all-qt) ;;
+    toolchain|gem5|ase-studio|all-ase) ;;
     -h|--help|help) usage; exit 0 ;;
     *) usage >&2; exit 2 ;;
 esac
@@ -195,19 +185,12 @@ detect_distribution
 case "${command}" in
     toolchain) install_native_component toolchain; update_setup_default none ;;
     gem5) install_native_component gem5; update_setup_default none ;;
-    visualizer) install_native_component visualizer; update_setup_default qt ;;
     ase-studio) install_ase_studio; update_setup_default ase ;;
     all-ase)
         install_native_component toolchain
         install_native_component gem5
         install_ase_studio
         update_setup_default ase
-        ;;
-    all-qt)
-        install_native_component toolchain
-        install_native_component gem5
-        install_native_component visualizer
-        update_setup_default qt
         ;;
 esac
 

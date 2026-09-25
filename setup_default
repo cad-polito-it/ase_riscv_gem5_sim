@@ -64,7 +64,6 @@ export PYTHONPATH=$PYTHONPATH:${GEM5_SRC}src/sim
 ###############################################
 #########   PIPELINE VISUALIZER   #############
 ###############################################
-export PIPELINE_VISUALIZER="./tools/gem5_pipeline_visualizer"
 export PIPELINE_DISPLAY_CYCLE_LIMIT="${PIPELINE_DISPLAY_CYCLE_LIMIT:-3000}"
 export SUBMISSION_NAME_PREFIX="${SUBMISSION_NAME_PREFIX:-YOUR_NAME_}"
 export SUBMISSION_NAME_SUFFIX="${SUBMISSION_NAME_SUFFIX:-}"

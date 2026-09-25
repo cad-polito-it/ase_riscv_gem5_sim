@@ -26,13 +26,11 @@ $ git clone --recurse-submodules https://github.com/cad-polito-it/ase_riscv_gem5
 ```
 
 ### Prerequisites
-In order to simulate a program, you need the following three tools:
+In order to simulate a program, you need the following two core tools:
 - A Risc-V cross compiler
-- An architectural simulator
-- A pipeline visualizer
+- An architectural simulator (gem5)
 
-Installation guidelines are provided for each of the aforementioned tools.
-In case you are using LABINF PCs, you can skip the installation part.
+The pipeline visualizer is provided by ASE Studio (GTK/WebKit frontend).
 
 An important file for the simulation flow is the [```setup_default```](./setup_default).
 In this file you need to specify you installation paths for different tools.
@@ -56,7 +54,7 @@ In the repository, you can find a script named [```installation.sh```](./utils/i
 ```bash
 $ ./utils/installation.sh
 ```
-It will install the cross-compiler, gem5 and the pipeline visualizer in a default folder  named ```./tools/```. 
+It will install the cross-compiler and gem5 in a default folder named ```./tools/```. 
 
 **It automatically updates the ```setup_default``` file with the correct paths.**
 
