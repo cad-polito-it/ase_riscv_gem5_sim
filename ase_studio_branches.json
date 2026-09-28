@@ -1,4 +1,4 @@
 {
-  "simulator": "ase_studio",
+  "simulator": "main",
   "gem5": "stable"
 }
