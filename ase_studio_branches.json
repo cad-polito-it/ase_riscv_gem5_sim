@@ -1,4 +1,5 @@
 {
   "simulator": "main",
+  "studio": "main",
   "gem5": "stable"
 }

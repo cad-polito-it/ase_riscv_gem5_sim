@@ -68,7 +68,7 @@ You can compile from scratch the toolchain and the necessary dependencies for Ri
 
 Start by cloning gem5 from this repository:
 ```
-$ git clone --branch fix/minor-store-source-version https://github.com/cad-polito-it/gem5
+$ git clone --branch stable https://github.com/cad-polito-it/gem5
 ```
 
 To install Gem5 and the necessary dependencies, you can follow the README of that repo as well as these [instructions](https://www.gem5.org/documentation/general_docs/building).
