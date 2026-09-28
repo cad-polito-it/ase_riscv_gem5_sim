@@ -1,0 +1,4 @@
+{
+  "simulator": "main",
+  "gem5": "stable"
+}

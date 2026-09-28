@@ -1,0 +1,3 @@
+[submodule "ase_studio"]
+	path = ase_studio
+	url = https://github.com/cad-polito-it/ase-studio.git

@@ -1,13 +1,26 @@
-export WORK_DIR=$(pwd)
+SETUP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export WORK_DIR="${SETUP_ROOT}"
 
-## Attention: default are installation dependent paths. Change them according to your installation !
+## Repository-local defaults. ASE Studio can override them from its gear menu.
 
 ###############################################
 #########   CROSS COMPILER RISCV  #############
 ###############################################
-export CC="/mnt/d/uni/PoundtheHeadonDesk/ase_new/toolchain/bin/riscv64-unknown-elf-gcc"
-export OBJDUMP="/mnt/d/uni/PoundtheHeadonDesk/ase_new/toolchain/bin/riscv64-unknown-elf-objdump"
-export CC_INSTALLATION_PATH="/mnt/d/uni/PoundtheHeadonDesk/ase_new/toolchain/bin/"
+export RISCV_TOOLCHAIN_PATH="${RISCV_TOOLCHAIN_PATH:-${WORK_DIR}/tools/riscv-toolchain/bin}"
+if [[ -d "${RISCV_TOOLCHAIN_PATH}/bin" ]]; then
+    export RISCV_TOOLCHAIN_PATH="${RISCV_TOOLCHAIN_PATH}/bin"
+fi
+RISCV_TOOL_PREFIX=""
+for prefix in riscv-none-elf riscv64-unknown-elf riscv32-unknown-elf riscv64-linux-gnu riscv32-linux-gnu; do
+    if [[ -x "${RISCV_TOOLCHAIN_PATH}/${prefix}-gcc" && -x "${RISCV_TOOLCHAIN_PATH}/${prefix}-objdump" ]]; then
+        RISCV_TOOL_PREFIX="${prefix}"
+        break
+    fi
+done
+RISCV_TOOL_PREFIX="${RISCV_TOOL_PREFIX:-riscv64-unknown-elf}"
+export CC="${RISCV_TOOLCHAIN_PATH}/${RISCV_TOOL_PREFIX}-gcc"
+export OBJDUMP="${RISCV_TOOLCHAIN_PATH}/${RISCV_TOOL_PREFIX}-objdump"
+export CC_INSTALLATION_PATH="${RISCV_TOOLCHAIN_PATH}/"
 ## optimization flags for the compiler
 export OPTIMIZATION_FLAGS="-O0 "
 
@@ -15,19 +28,19 @@ export OPTIMIZATION_FLAGS="-O0 "
 ######### ARCHITECTURAL SIMULATOR #############
 ###############################################
 
-export GEM5_INSTALLATION_PATH="/mnt/d/uni/PoundtheHeadonDesk/ase_new/gem5/build/"
+export GEM5_INSTALLATION_PATH="${GEM5_INSTALLATION_PATH:-${WORK_DIR}/tools/gem5/build/}"
 export GEM5_ISA="RISCV"
 export GEM5_VARIANT="opt"
 
 # Select the in order CPU 
-export GEM5_SIMULATION_SCRIPT="./gem5/riscv_in_order_hen_patt.py"
+export GEM5_SIMULATION_SCRIPT="${GEM5_SIMULATION_SCRIPT:-./gem5/riscv_in_order_hen_patt.py}"
 export GEM5_CPU_IN_ORDER=true
 #Select one of this OoO CPU
 #export GEM5_SIMULATION_SCRIPT="./gem5/riscv_o3_custom.py"
 #export GEM5_SIMULATION_SCRIPT="./gem5/riscv_o3_simple.py"
 #export GEM5_SIMULATION_SCRIPT="./gem5/riscv_o3_two_level_caches.py"
 
-export RESULTS_DIR=${WORK_DIR}/results
+export RESULTS_DIR="${WORK_DIR}/results"
 
 
 if [[ ! -d  "${RESULTS_DIR}" ]] ; then 
@@ -36,7 +49,7 @@ mkdir ${RESULTS_DIR}
 fi 
 
 ## util path from gem5 rep
-export GEM5_SRC="/mnt/d/uni/PoundtheHeadonDesk/ase_new/gem5/"
+export GEM5_SRC="${GEM5_SRC:-${WORK_DIR}/tools/gem5}"
 export GEM5_UTIL=${GEM5_SRC}/util/
 
 ### EXPORTING gem5 utilities for python
@@ -51,4 +64,9 @@ export PYTHONPATH=$PYTHONPATH:${GEM5_SRC}src/sim
 ###############################################
 #########   PIPELINE VISUALIZER   #############
 ###############################################
-export PIPELINE_VISUALIZER="/mnt/d/uni/PoundtheHeadonDesk/ase_riscv_gem5_sim/tools/gem5_visualizer/build/gem5_pipeline_visualizer"
+export PIPELINE_DISPLAY_CYCLE_LIMIT="${PIPELINE_DISPLAY_CYCLE_LIMIT:-3000}"
+export SUBMISSION_NAME_PREFIX="${SUBMISSION_NAME_PREFIX:-YOUR_NAME_}"
+export SUBMISSION_NAME_SUFFIX="${SUBMISSION_NAME_SUFFIX:-}"
+
+
+export PYTHONPATH="${WORK_DIR}/tools/gem5/configs:$PYTHONPATH"

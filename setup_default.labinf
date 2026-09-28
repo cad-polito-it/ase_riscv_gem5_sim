@@ -15,7 +15,7 @@ export OPTIMIZATION_FLAGS="-O0 "
 ######### ARCHITECTURAL SIMULATOR #############
 ###############################################
 
-export GEM5_INSTALLATION_PATH="/opt/gem5-22.1-ASE/gem5/build/"
+export GEM5_INSTALLATION_PATH="/opt/gem5-ASE/build/"
 export GEM5_ISA="RISCV"
 export GEM5_VARIANT="opt"
 
@@ -36,7 +36,7 @@ mkdir ${RESULTS_DIR}
 fi 
 
 ## util path from gem5 rep
-export GEM5_SRC="/opt/gem5-22.1-ASE/gem5/"
+export GEM5_SRC="/opt/gem5-ASE/"
 export GEM5_UTIL=${GEM5_SRC}/util/
 
 ### EXPORTING gem5 utilities for python
@@ -48,7 +48,14 @@ export PYTHONPATH=$PYTHONPATH:${GEM5_SRC}src/python/m5
 export PYTHONPATH=$PYTHONPATH:${GEM5_SRC}src/sim
 
 
+
 ###############################################
 #########   PIPELINE VISUALIZER   #############
 ###############################################
-export PIPELINE_VISUALIZER="/opt/gem5-22.1-ASE/Gem5_Pipeline_Visualizer-x86_64.AppImage"
+export PIPELINE_DISPLAY_CYCLE_LIMIT="${PIPELINE_DISPLAY_CYCLE_LIMIT:-3000}"
+export SUBMISSION_NAME_PREFIX="${SUBMISSION_NAME_PREFIX:-YOUR_NAME_}"
+export SUBMISSION_NAME_SUFFIX="${SUBMISSION_NAME_SUFFIX:-}"
+
+
+export PYTHONPATH="${WORK_DIR}/tools/gem5/configs:$PYTHONPATH"
+
