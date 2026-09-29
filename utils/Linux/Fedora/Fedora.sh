@@ -9,7 +9,7 @@ declare -A deps
 
 ##############################################################################
 
-for f in ${UTILS_DIR}/${OS}/${DISTRO}/*_dep.sh; do
+for f in "${UTILS_DIR}/${OS}/${DISTRO}"/*_dep.sh; do
   fid=$(basename "${f}" | cut -d "_" -f1)
   echo "Installing dependencies for ${fid}..."
   sudo -E bash "${f}"
@@ -24,7 +24,7 @@ done
 
 ##############################################################################
 
-for f in ${UTILS_DIR}/${OS}/${DISTRO}/*_install.sh; do
+for f in "${UTILS_DIR}/${OS}/${DISTRO}"/*_install.sh; do
   fid=$(basename "${f}" | cut -d "_" -f1)
   if [ "${deps[${fid}]:-1}" -eq 0 ]; then
     echo "Installing ${fid}..."

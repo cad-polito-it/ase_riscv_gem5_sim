@@ -16,9 +16,9 @@ else
 fi
 ##############################################################################
 
-cd ${ROOT_DIR}/gem5
-python3.10 -m venv ${ROOT_DIR}/myenv
-source ${ROOT_DIR}/myenv/bin/activate
+cd "${ROOT_DIR}/gem5"
+python3.10 -m venv "${ROOT_DIR}/myenv"
+source "${ROOT_DIR}/myenv/bin/activate"
 
 export PYTHON=/usr/bin/python3.10
 export PYTHON_CONFIG=/usr/bin/python3.10-config
