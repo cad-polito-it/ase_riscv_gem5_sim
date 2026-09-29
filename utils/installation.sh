@@ -24,6 +24,7 @@ Commands:
   toolchain   Install only the RISC-V GNU toolchain
   gem5        Install only the gem5 simulator
   ase-studio  Install ASE Studio and its native GTK launcher
+  labinf      Use preinstalled LabInf tools and create ASE Studio launchers
   all-ase     Install toolchain, gem5, and ASE Studio
 EOF
 }
@@ -33,16 +34,18 @@ choose_command() {
     select choice in \
         "All with ASE Studio (recommended)" \
         "ASE Studio only" \
+        "Configure a LabInf checkout (no tool installation)" \
         "RISC-V toolchain only" \
         "gem5 only" \
         "Cancel"; do
         case "${REPLY}" in
             1) CHOSEN_COMMAND="all-ase"; return ;;
             2) CHOSEN_COMMAND="ase-studio"; return ;;
-            3) CHOSEN_COMMAND="toolchain"; return ;;
-            4) CHOSEN_COMMAND="gem5"; return ;;
-            5) exit 0 ;;
-            *) echo "Enter a number from 1 to 5." >&2 ;;
+            3) CHOSEN_COMMAND="labinf"; return ;;
+            4) CHOSEN_COMMAND="toolchain"; return ;;
+            5) CHOSEN_COMMAND="gem5"; return ;;
+            6) exit 0 ;;
+            *) echo "Enter a number from 1 to 6." >&2 ;;
         esac
     done
 }
@@ -163,6 +166,43 @@ update_setup_default() {
     fi
 }
 
+configure_labinf() {
+    local labinf_setup="${WORK_DIR}/setup_default.labinf"
+    local studio_installer="${WORK_DIR}/ase_studio/install.sh"
+    if [[ ! -f "${labinf_setup}" ]]; then
+        echo "Missing LabInf configuration: ${labinf_setup}" >&2
+        exit 1
+    fi
+
+    if ! (
+        cd "${WORK_DIR}"
+        set +u
+        # shellcheck disable=SC1091
+        source "${labinf_setup}"
+        [[ -x "${CC}" ]]
+        [[ -x "${OBJDUMP}" ]]
+        [[ -x "${GEM5_INSTALLATION_PATH%/}/${GEM5_ISA}/gem5.${GEM5_VARIANT}" ]]
+    ); then
+        echo "The paths copied from setup_default.labinf do not point to all required LabInf tools." >&2
+        echo "Ask the LabInf administrator to verify the shared RISC-V and gem5 installations." >&2
+        exit 1
+    fi
+    install -m 0644 "${labinf_setup}" "${WORK_DIR}/setup_default"
+
+    if [[ ! -f "${studio_installer}" ]]; then
+        if [[ -f "${WORK_DIR}/.gitmodules" ]]; then
+            git -C "${WORK_DIR}" submodule update --init --recursive ase_studio
+        else
+            echo "ASE Studio is missing and this checkout has no submodule configuration." >&2
+            exit 1
+        fi
+    fi
+    bash "${studio_installer}" --launcher-only
+    if [[ -f "${WORK_DIR}/.ase-studio-env.json" ]]; then
+        echo "Note: existing values in .ase-studio-env.json override setup_default; review them in ASE Studio Settings."
+    fi
+}
+
 command="${1:-}"
 if [[ -z "${command}" ]]; then
     if [[ -t 0 ]]; then
@@ -175,10 +215,16 @@ if [[ -z "${command}" ]]; then
     fi
 fi
 case "${command}" in
-    toolchain|gem5|ase-studio|all-ase) ;;
+    toolchain|gem5|ase-studio|labinf|all-ase) ;;
     -h|--help|help) usage; exit 0 ;;
     *) usage >&2; exit 2 ;;
 esac
+
+if [[ "${command}" == "labinf" ]]; then
+    configure_labinf
+    echo "LabInf configuration completed successfully."
+    exit 0
+fi
 
 mkdir -p "${ROOT_DIR}"
 detect_distribution

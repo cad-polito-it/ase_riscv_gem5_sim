@@ -42,10 +42,11 @@ export GEM5_SRC="/mnt/d/gem5_simulator/gem5/"
 ```
 The ```CC``` is the cross compiler, and it is installed in ```/usr/bin```. Meanwhile the Architectural Simulator (Gem5) is installed in ```/mnt/d/gem5_simulator/build```, while its soruce are at ```/mnt/d/gem5_simulator/gem5```.
 
-In the repository, you have different ```setup_default``` files, each one for a specific configuration (LABINF, VM, or your native installation). You can choose the one that fits your needs. For example, if you want to use the LABINF configuration, you can copy the corresponding file ```setup_default_labinf``` to ```setup_default```:
-```bash 
-$ cp setup_default.labinf setup_default
+In the repository, you have different ```setup_default``` files, each one for a specific configuration (LABINF, VM, or your native installation). You can choose the one that fits your needs. For a LABINF workstation, configure the preinstalled tools and create the ASE Studio desktop shortcut with:
+```bash
+$ ./utils/installation.sh labinf
 ```
+This copies `setup_default.labinf` to `setup_default`, verifies the shared compiler and gem5 paths, and creates the launcher without reinstalling the toolchain or gem5.
 
 ### Installation 
 
@@ -54,7 +55,9 @@ In the repository, you can find a script named [```installation.sh```](./utils/i
 ```bash
 $ ./utils/installation.sh
 ```
-It will install the cross-compiler and gem5 in a default folder named ```./tools/```. 
+Use `./utils/installation.sh labinf` instead on LABINF systems where the required tools are already installed.
+
+The standard installation will install the cross-compiler and gem5 in a default folder named ```./tools/```.
 
 **It automatically updates the ```setup_default``` file with the correct paths.**
 
