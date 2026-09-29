@@ -15,6 +15,9 @@ if  [[ -z "${DISTRO}" ]]; then
 	exit 1
 elif [[ "${DISTRO}" == "Arch" || "${DISTRO}" == "ManjaroLinux" ]]; then
 	DISTRO="Arch"
+elif [[ -r /etc/os-release ]] && (source /etc/os-release; [[ " ${ID_LIKE:-} " == *" arch "* ]]); then
+	# Arch derivatives such as CachyOS and EndeavourOS
+	DISTRO="Arch"
 fi
 
 export DISTRO
