@@ -5,15 +5,15 @@ RISCV_TOOLCHAIN_REPOSITORY="https://github.com/riscv-collab/riscv-gnu-toolchain.
 ##############################################################################
 
 echo "Installing RISC-V toolchain"
-git clone ${RISCV_TOOLCHAIN_REPOSITORY} ${ROOT_DIR}/riscv-gnu-toolchain
+git clone ${RISCV_TOOLCHAIN_REPOSITORY} "${ROOT_DIR}/riscv-gnu-toolchain"
 
 ##############################################################################
 
-cd ${ROOT_DIR}/riscv-gnu-toolchain
+cd "${ROOT_DIR}/riscv-gnu-toolchain"
 
 ##############################################################################
 
-./configure --prefix=${ROOT_DIR}/riscv-toolchain --enable-multilib
+./configure --prefix="${ROOT_DIR}/riscv-toolchain" --enable-multilib
 make -j $(($(nproc) / 2))  
 make install 
 if [[ $? -ne 0 ]]; then
@@ -22,11 +22,11 @@ if [[ $? -ne 0 ]]; then
 	exit 1
 fi
 echo "Cleaning up"
-rm -rf ${ROOT_DIR}/riscv-gnu-toolchain
+rm -rf "${ROOT_DIR}/riscv-gnu-toolchain"
 
 ##############################################################################
 
-cd ${WORK_DIR}
+cd "${WORK_DIR}"
 
 ##############################################################################
 
