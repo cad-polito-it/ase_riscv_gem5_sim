@@ -9,14 +9,14 @@ fi
 # Ensure OS is set (needed by the handoff path)
 # export DISTRO=$(lsb_release -ds | cut -d " " -f 1) nvm doing this. 
 DISTRO=$(lsb_release -is)
+if [[ -r /etc/os-release ]]; then
+	source /etc/os-release
+fi
 
 if  [[ -z "${DISTRO}" ]]; then
 	echo "Could not determine Linux distribution."
 	exit 1
-elif [[ "${DISTRO}" == "Arch" || "${DISTRO}" == "ManjaroLinux" ]]; then
-	DISTRO="Arch"
-elif [[ -r /etc/os-release ]] && (source /etc/os-release; [[ " ${ID_LIKE:-} " == *" arch "* ]]); then
-	# Arch derivatives such as CachyOS and EndeavourOS
+elif [[ "${DISTRO}" == "Arch" || "${DISTRO}" == "ManjaroLinux" || " ${ID_LIKE:-} " == *" arch "* ]]; then
 	DISTRO="Arch"
 fi
 
