@@ -55,17 +55,24 @@ detect_distribution() {
         echo "Unsupported operating system: ${OS}" >&2
         exit 1
     fi
+    if [[ -r /etc/os-release ]]; then
+        # shellcheck disable=SC1091
+        source /etc/os-release
+    fi
     if command -v lsb_release >/dev/null 2>&1; then
         DISTRO="$(lsb_release -is)"
         VERSION="$(lsb_release -rs)"
     elif [[ -r /etc/os-release ]]; then
-        # shellcheck disable=SC1091
-        source /etc/os-release
         DISTRO="${ID:-}"
         VERSION="${VERSION_ID:-}"
     else
         echo "Could not determine the Linux distribution." >&2
         exit 1
+    fi
+    # Arch derivatives (CachyOS, EndeavourOS, ...) can reuse the Arch scripts,
+    # which do not depend on a release number.
+    if [[ " ${ID_LIKE:-} " == *" arch "* ]]; then
+        DISTRO="Arch"
     fi
     case "${DISTRO,,}" in
         ubuntu) DISTRO="Ubuntu" ;;
