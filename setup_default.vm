@@ -15,7 +15,7 @@ export OPTIMIZATION_FLAGS="-O0 "
 ######### ARCHITECTURAL SIMULATOR #############
 ###############################################
 
-export GEM5_INSTALLATION_PATH="/home/vboxuser/gem5/build/"
+export GEM5_INSTALLATION_PATH="/home/vboxuser/gem5/build/RISCV/gem5.opt"
 export GEM5_ISA="RISCV"
 export GEM5_VARIANT="opt"
 
