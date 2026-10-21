@@ -68,7 +68,7 @@ detect_distribution() {
         exit 1
     fi
     case "${DISTRO,,}" in
-        ubuntu) DISTRO="Ubuntu" ;;
+        ubuntu|pop) DISTRO="Ubuntu" ;;
         fedora) DISTRO="Fedora" ;;
         arch|manjarolinux|manjaro) DISTRO="Arch" ;;
         *) echo "Unsupported Linux distribution: ${DISTRO}" >&2; exit 1 ;;
