@@ -27,6 +27,7 @@
 
 # Generic python libraries
 import argparse
+import json
 import os
 import os.path
 import sys
@@ -41,9 +42,7 @@ from m5.objects import *
 from m5.objects.BranchPredictor import *
 from m5.objects.FUPool import FUPool
 from m5.objects.FuncUnit import OpDesc, FUDesc
-from m5.objects.FuncUnitConfig import (
-    FP_ALU, IntALU, FP_MultDiv, RdWrPort, IprPort
-)
+from m5.objects.FuncUnitConfig import FP_ALU, IntALU, RdWrPort, IprPort
 
 from gem5.simulate.exit_event import ExitEvent
 from gem5.simulate.simulator import Simulator
@@ -241,7 +240,18 @@ def create_cpu(options, cpu_id):
         "bimode": predictor.create_BiModeBP,
         "tage": predictor.create_TAGE,
     }
-    the_cpu.branchPred = branch_predictors[options.ase_branch_predictor]()
+    branch_predictor = branch_predictors[options.ase_branch_predictor]()
+    for parameter, value in options.ase_branch_predictor_parameters.items():
+        if parameter in {
+            "minHist", "maxHist", "tagTableCounterBits", "tagTableUBits",
+            "tagTableTagWidths", "logTagTableSizes",
+        }:
+            if options.ase_branch_predictor != "tage":
+                raise ValueError(f"{parameter} is only valid for TAGE")
+            setattr(branch_predictor.tage, parameter, value)
+        else:
+            setattr(branch_predictor, parameter, value)
+    the_cpu.branchPred = branch_predictor
     # ****************************
     # - FETCH STAGE
     # ****************************
@@ -294,16 +304,21 @@ def create_cpu(options, cpu_id):
             OpDesc(opClass="IntAlu", opLat=options.ase_int_alu_latency,
                    pipelined=options.ase_int_alu_pipelined == "on")
         ]
-        count = 1
+        count = options.ase_int_alu_units
 
-    class CPU_IntMultDiv(FUDesc):
+    class CPU_IntMult(FUDesc):
         opList = [
             OpDesc(opClass="IntMult", opLat=options.ase_int_mul_latency,
-                   pipelined=options.ase_int_mul_pipelined == "on"),
+                   pipelined=options.ase_int_mul_pipelined == "on")
+        ]
+        count = options.ase_int_mul_units
+
+    class CPU_IntDiv(FUDesc):
+        opList = [
             OpDesc(opClass="IntDiv", opLat=options.ase_int_div_latency,
                    pipelined=options.ase_int_div_pipelined == "on")
         ]
-        count = 1
+        count = options.ase_int_div_units
     class CPU_FP_ALU(FP_ALU):
         opList = [
             OpDesc(opClass="FloatAdd", opLat=options.ase_float_alu_latency,
@@ -312,23 +327,28 @@ def create_cpu(options, cpu_id):
                    pipelined=options.ase_float_alu_pipelined == "on"),
             OpDesc(opClass="FloatCvt", opLat=options.ase_float_alu_latency,
                    pipelined=options.ase_float_alu_pipelined == "on"),
+            OpDesc(opClass="FloatMisc", opLat=options.ase_float_alu_latency,
+                   pipelined=options.ase_float_alu_pipelined == "on"),
         ]
-        count = 1
+        count = options.ase_float_alu_units
 
-    class CPU_FP_MultDiv(FP_MultDiv):
+    class CPU_FP_Mult(FUDesc):
         opList = [
             OpDesc(opClass="FloatMult", opLat=options.ase_float_mul_latency,
                    pipelined=options.ase_float_mul_pipelined == "on"),
             OpDesc(opClass="FloatMultAcc", opLat=options.ase_float_mul_latency,
                    pipelined=options.ase_float_mul_pipelined == "on"),
+        ]
+        count = options.ase_float_mul_units
+
+    class CPU_FP_Div(FUDesc):
+        opList = [
             OpDesc(opClass="FloatDiv", opLat=options.ase_float_div_latency,
                    pipelined=options.ase_float_div_pipelined == "on"),
             OpDesc(opClass="FloatSqrt", opLat=options.ase_float_div_latency,
                    pipelined=options.ase_float_div_pipelined == "on"),
-            OpDesc(opClass="FloatMisc", opLat=options.ase_float_alu_latency,
-                   pipelined=options.ase_float_alu_pipelined == "on"),
         ]
-        count = 1
+        count = options.ase_float_div_units
 
     class CPU_SIMD(SIMD_Unit):
         opList = [ 
@@ -364,20 +384,15 @@ def create_cpu(options, cpu_id):
         opList = [OpDesc(opClass="SimdPredAlu")]
         count = 0
 
-    class CPU_ReadPort(ReadPort):
-        opList = [OpDesc(opClass="MemRead", opLat=1), OpDesc(opClass="FloatMemRead", opLat=1)]
-        count = 2
-    class CPU_WritePort(WritePort):
-        opList = [OpDesc(opClass="MemWrite", opLat=1), OpDesc(opClass="FloatMemWrite", opLat=1)]
-        count = 2
+    # One shared pool models the teaching table's load/store address units.
     class CPU_RdWrPort(RdWrPort):
         opList = [
-            OpDesc(opClass="MemRead"),
-            OpDesc(opClass="MemWrite"),
-            OpDesc(opClass="FloatMemRead"),
-            OpDesc(opClass="FloatMemWrite"),
+            OpDesc(opClass="MemRead", opLat=1),
+            OpDesc(opClass="MemWrite", opLat=1),
+            OpDesc(opClass="FloatMemRead", opLat=1),
+            OpDesc(opClass="FloatMemWrite", opLat=1),
         ]
-        count = 0 
+        count = options.ase_memory_units
 
 
     class CPU_IprPort(IprPort):
@@ -387,13 +402,13 @@ def create_cpu(options, cpu_id):
     class CPUFUPool(FUPool):
         FUList = [
             CPU_IntALU(),
-            CPU_IntMultDiv(),
+            CPU_IntMult(),
+            CPU_IntDiv(),
             CPU_FP_ALU(),
-            CPU_FP_MultDiv(),
-            CPU_ReadPort(),
+            CPU_FP_Mult(),
+            CPU_FP_Div(),
             CPU_SIMD(),
             CPU_PredALU(),
-            CPU_WritePort(),
             CPU_RdWrPort(),
             CPU_IprPort(),
         ]
@@ -597,6 +612,13 @@ def get_options():
     parser.add_argument("--ase-issue-width", type=int, default=2)
     parser.add_argument("--ase-writeback-width", type=int, default=2)
     parser.add_argument("--ase-commit-width", type=int, default=2)
+    parser.add_argument("--ase-int-alu-units", type=int, default=1)
+    parser.add_argument("--ase-int-mul-units", type=int, default=1)
+    parser.add_argument("--ase-int-div-units", type=int, default=1)
+    parser.add_argument("--ase-float-alu-units", type=int, default=1)
+    parser.add_argument("--ase-float-mul-units", type=int, default=1)
+    parser.add_argument("--ase-float-div-units", type=int, default=1)
+    parser.add_argument("--ase-memory-units", type=int, default=1)
     parser.add_argument("--ase-rob-entries", type=int, default=64)
     parser.add_argument("--ase-iq-entries", type=int, default=128)
     parser.add_argument("--ase-lq-entries", type=int, default=32)
@@ -605,6 +627,10 @@ def get_options():
         "--ase-branch-predictor",
         choices=("local", "tournament", "bimode", "tage"),
         default="local",
+    )
+    parser.add_argument(
+        "--ase-branch-predictor-parameters", type=json.loads, default={},
+        help="JSON object of predictor parameters validated by ASE Studio",
     )
 
     parser.set_defaults(
