@@ -159,7 +159,7 @@ update_setup_default() {
     set_setup_export CC 'export CC="${RISCV_TOOLCHAIN_PATH}/riscv64-unknown-elf-gcc"'
     set_setup_export OBJDUMP 'export OBJDUMP="${RISCV_TOOLCHAIN_PATH}/riscv64-unknown-elf-objdump"'
     set_setup_export CC_INSTALLATION_PATH 'export CC_INSTALLATION_PATH="${RISCV_TOOLCHAIN_PATH}/"'
-    set_setup_export GEM5_INSTALLATION_PATH 'export GEM5_INSTALLATION_PATH="${WORK_DIR}/tools/gem5/build/"'
+    set_setup_export GEM5_INSTALLATION_PATH 'export GEM5_INSTALLATION_PATH="${WORK_DIR}/tools/gem5/build/RISCV/gem5.opt"'
     set_setup_export GEM5_SRC 'export GEM5_SRC="${WORK_DIR}/tools/gem5"'
     if [[ "${frontend}" == "ase" ]]; then
         set_setup_export PIPELINE_VISUALIZER 'export PIPELINE_VISUALIZER="${WORK_DIR}/ase-studio.sh"'
@@ -181,7 +181,7 @@ configure_labinf() {
         source "${labinf_setup}"
         [[ -x "${CC}" ]]
         [[ -x "${OBJDUMP}" ]]
-        [[ -x "${GEM5_INSTALLATION_PATH%/}/${GEM5_ISA}/gem5.${GEM5_VARIANT}" ]]
+        [[ -x "${GEM5_INSTALLATION_PATH}" ]]
     ); then
         echo "The paths copied from setup_default.labinf do not point to all required LabInf tools." >&2
         echo "Ask the LabInf administrator to verify the shared RISC-V and gem5 installations." >&2

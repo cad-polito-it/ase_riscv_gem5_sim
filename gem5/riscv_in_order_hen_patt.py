@@ -309,18 +309,23 @@ if args.ase_forwarding != "auto":
     # checkbox could not change scheduling.  With forwarding enabled, expose
     # the producer result one cycle before write-back (or earlier for longer
     # functional units); with it disabled, dependents wait for write-back.
+    # Memory results remain unpredictable until their real response arrives;
+    # assigning them a guessed latency can release a consumer too early.
     blocked_sources = [] if args.ase_forwarding == "on" else list(range(6))
-    for function_unit in function_units:
+    for unit_index, function_unit in enumerate(function_units):
         function_unit.cantForwardFromFUIndices = blocked_sources
-        for timing in function_unit.timings:
+        for timing_index, timing in enumerate(function_unit.timings):
             # Decode is one stage ahead of execution.  A relative latency of
             # one lets a dependent enter that stage on the producer's final
             # execution cycle; blocking the producer FU forces write-back.
             timing.srcRegsRelativeLats = [1] if args.ase_forwarding == "on" else [0]
-            if args.ase_forwarding == "off":
+            # Integer FU timing 1 is the Mem/FloatMem timing defined above.
+            is_memory_timing = unit_index == 0 and timing_index == 1
+            if args.ase_forwarding == "off" and not is_memory_timing:
                 # The customized scoreboard records producer readiness at FU
                 # completion.  Add the E->M/W register-file distance only for
-                # non-forwarded results so consumers cannot issue at E.
+                # non-forwarded fixed-latency results so consumers cannot
+                # issue at E. Loads instead wait for the memory response.
                 timing.extraAssumedLat = int(timing.extraAssumedLat) + 1
 
 ##################################################################

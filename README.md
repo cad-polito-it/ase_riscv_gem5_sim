@@ -37,10 +37,10 @@ In this file you need to specify you installation paths for different tools.
 For example:
 ```
 export CC="/usr/bin/riscv64-linux-gnu-gcc-10"
-export GEM5_INSTALLATION_PATH="/mnt/d/gem5_simulator/build/"
+export GEM5_INSTALLATION_PATH="/mnt/d/gem5_simulator/build/RISCV/gem5.opt"
 export GEM5_SRC="/mnt/d/gem5_simulator/gem5/"
 ```
-The ```CC``` is the cross compiler, and it is installed in ```/usr/bin```. Meanwhile the Architectural Simulator (Gem5) is installed in ```/mnt/d/gem5_simulator/build```, while its soruce are at ```/mnt/d/gem5_simulator/gem5```.
+The ```CC``` is the cross compiler, and it is installed in ```/usr/bin```. ```GEM5_INSTALLATION_PATH``` is the complete path to the gem5 executable (or an executable wrapper that forwards its arguments), while the simulator source is at ```/mnt/d/gem5_simulator/gem5```.
 
 In the repository, you have different ```setup_default``` files, each one for a specific configuration (LABINF, VM, or your native installation). You can choose the one that fits your needs. For a LABINF workstation, configure the preinstalled tools and create the ASE Studio desktop shortcut with:
 ```bash
