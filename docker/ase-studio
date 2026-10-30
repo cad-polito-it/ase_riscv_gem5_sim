@@ -1,0 +1,11 @@
+#!/bin/bash
+# Runs inside the container (repo mounted at /work): start the ASE Studio web backend.
+# The backend only listens on the container's 127.0.0.1, so socat re-exposes it on :8766,
+# which the host maps to http://127.0.0.1:8765.
+set -eo pipefail
+cd /work
+[[ -f ase_studio/backend.py ]] || { echo "ase_studio is empty: run 'git submodule update --init --recursive'" >&2; exit 1; }
+source ./setup_default >/dev/null
+export ASE_STUDIO_HOST_ROOT=/work
+socat TCP-LISTEN:8766,fork,reuseaddr TCP:127.0.0.1:8765 &
+exec python3 ase_studio/backend.py 8765

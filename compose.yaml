@@ -1,0 +1,20 @@
+# Alternative to sim.sh / studio.sh for Windows PowerShell (no bash needed):
+#   docker compose run --rm sim ase-sim example
+#   docker compose up studio        then open http://127.0.0.1:8765   (Ctrl+C to stop)
+# The published image is downloaded automatically; `docker compose build` builds it locally instead.
+services:
+  sim:
+    image: ${ASE_IMAGE:-ghcr.io/sanazsafaei/ase-riscv-gem5:latest}
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes: [".:/work"]
+    command: ["ase-sim", "example"]
+  studio:
+    image: ${ASE_IMAGE:-ghcr.io/sanazsafaei/ase-riscv-gem5:latest}
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes: [".:/work"]
+    ports: ["127.0.0.1:8765:8766"]
+    command: ["ase-studio"]

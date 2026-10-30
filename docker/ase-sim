@@ -1,0 +1,39 @@
+#!/bin/bash
+# Runs inside the container (repo mounted at /work): build programs/<name> and simulate it on
+# gem5's in-order MinorCPU. Results go to results/<name>/.
+# Usage: ase-sim <program> [-- extra gem5 config options]
+# Env:   L1D (4kB)  L1I (4kB)  CACHELINE (16)
+set -eo pipefail
+
+NAME="${1:?usage: ase-sim <program> [-- gem5 options]}"; shift
+[[ "${1:-}" == "--" ]] && shift
+EXTRA="$*"
+
+cd /work
+if [[ ! -f setup_default || ! -d "programs/${NAME}" ]]; then
+    echo "Run this from the ase_riscv_gem5_sim repository; programs/${NAME} must exist." >&2
+    echo "Available programs: $(ls programs 2>/dev/null | grep -v '\.mk$' | tr '\n' ' ')" >&2
+    exit 1
+fi
+source ./setup_default >/dev/null
+
+# build in the container filesystem (fast, and never touches the repository)
+rm -rf /tmp/p && cp -r programs /tmp/p
+make -C "/tmp/p/${NAME}" CC="$CC" OBJDUMP="$OBJDUMP" OPTIMIZATION_FLAGS="$OPTIMIZATION_FLAGS" program="${NAME}"
+
+# GEM5_INSTALLATION_PATH is the gem5.opt executable (older setup_default files: its build dir)
+GEM5="$GEM5_INSTALLATION_PATH"
+[[ -d "$GEM5" ]] && GEM5="${GEM5%/}/RISCV/gem5.opt"
+
+OUT="/work/results/${NAME}"
+mkdir -p "$OUT"
+cp "/tmp/p/${NAME}/${NAME}.elf" "/tmp/p/${NAME}/${NAME}.dump" "$OUT/" 2>/dev/null || true
+
+"$GEM5" --outdir="$OUT" \
+    gem5/riscv_in_order_hen_patt.py --caches --cpu-type MinorCPU \
+    --l1d_size "${L1D:-4kB}" --l1i_size "${L1I:-4kB}" --cacheline_size "${CACHELINE:-16}" \
+    --cpu-clock 1GHz --sys-clock 1GHz $EXTRA -c "/tmp/p/${NAME}/${NAME}.elf"
+
+echo
+echo "Results in results/${NAME}/"
+grep -E "^simInsts|^system.cpu.numCycles" "$OUT/stats.txt" | head -2
