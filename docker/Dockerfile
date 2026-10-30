@@ -91,9 +91,9 @@ COPY --from=toolchain-build /opt/riscv/lib /opt/riscv/lib
 COPY --from=toolchain-build /opt/riscv/share /opt/riscv/share
 COPY --from=toolchain-build /opt/riscv/include /opt/riscv/include
 COPY --from=gem5-build /opt/gem5 /opt/gem5
-# setup_default of the simulator repo honours these overrides (note the trailing slashes)
+# setup_default of the simulator repo honours these overrides (GEM5_SRC needs its trailing slash)
 ENV RISCV_TOOLCHAIN_PATH=/opt/riscv/bin \
-    GEM5_INSTALLATION_PATH=/opt/gem5/build/ \
+    GEM5_INSTALLATION_PATH=/opt/gem5/build/RISCV/gem5.opt \
     GEM5_SRC=/opt/gem5/ \
     HOME=/tmp
 COPY docker/ase-sim docker/ase-studio /usr/local/bin/

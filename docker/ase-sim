@@ -21,11 +21,15 @@ source ./setup_default >/dev/null
 rm -rf /tmp/p && cp -r programs /tmp/p
 make -C "/tmp/p/${NAME}" CC="$CC" OBJDUMP="$OBJDUMP" OPTIMIZATION_FLAGS="$OPTIMIZATION_FLAGS" program="${NAME}"
 
+# GEM5_INSTALLATION_PATH is the gem5.opt executable (older setup_default files: its build dir)
+GEM5="$GEM5_INSTALLATION_PATH"
+[[ -d "$GEM5" ]] && GEM5="${GEM5%/}/RISCV/gem5.opt"
+
 OUT="/work/results/${NAME}"
 mkdir -p "$OUT"
 cp "/tmp/p/${NAME}/${NAME}.elf" "/tmp/p/${NAME}/${NAME}.dump" "$OUT/" 2>/dev/null || true
 
-"${GEM5_INSTALLATION_PATH%/}/RISCV/gem5.opt" --outdir="$OUT" \
+"$GEM5" --outdir="$OUT" \
     gem5/riscv_in_order_hen_patt.py --caches --cpu-type MinorCPU \
     --l1d_size "${L1D:-4kB}" --l1i_size "${L1I:-4kB}" --cacheline_size "${CACHELINE:-16}" \
     --cpu-clock 1GHz --sys-clock 1GHz $EXTRA -c "/tmp/p/${NAME}/${NAME}.elf"
