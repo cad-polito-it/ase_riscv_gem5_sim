@@ -79,7 +79,7 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
         python3 python3-tk make git socat ca-certificates \
-        libmpc3 libmpfr6 libgmp10 libexpat1 zlib1g libprotobuf23 libgoogle-perftools4 \
+        libmpc3 libmpfr6 libgmp10 libexpat1 zlib1g libprotobuf23 libgoogle-perftools4 libpython3.10 \
     && rm -rf /var/lib/apt/lists/* \
     && git config --system --add safe.directory '*'
 # Several small layers (instead of one huge one): on a flaky connection Docker restarts only
