@@ -13,7 +13,7 @@ repo_root = Path(__file__).parent.resolve()
 if str(repo_root) not in sys.path:
     sys.path.insert(0, str(repo_root))
 
-from ase_studio.simulator import simulate, run_command
+from ase_studio.backend import artifact_stem, run_command, simulate as simulate_project
 
 
 def main() -> int:
@@ -112,7 +112,9 @@ Examples:
                 key, value = item.split(b"=", 1)
                 env[key.decode(errors="ignore")] = value.decode(errors="replace")
 
-        env["program"] = program_name
+        # The ELF name must match the source file stem (e.g. main.elf),
+        # which is what the backend simulate() expects.
+        env["program"] = artifact_stem(program_folder)
 
         # Run make clean
         clean_rc, clean_output = run_command(["make", "clean"], program_folder, env)
@@ -127,7 +129,7 @@ Examples:
 
     # Simulation step
     print(f"Simulating program {program_name}")
-    result = simulate(program_folder, root, setup_file, results_dir)
+    result = simulate_project(program_name)
 
     if not result["ok"]:
         print("\033[31mSimulation error\033[0m")

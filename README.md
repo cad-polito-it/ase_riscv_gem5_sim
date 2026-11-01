@@ -5,6 +5,16 @@ This README provides an environment for simulating a program on a parametrizable
 
 ![flow](.images/gem5_workflow.png "Simulation flow")
 
+## ASE Studio for macOS (Apple Silicon)
+
+On a Mac with Apple Silicon you can use ASE Studio without installing Homebrew, Python, gem5 or the RISC-V compiler:
+
+1. Download the latest `ASE-Studio-<version>.dmg` from the [Releases](../../releases/latest).
+2. Open it and drag **ASE Studio** into **Applications**.
+3. On first launch macOS blocks the app, which is not signed by an Apple developer: go to *System Settings → Privacy & Security → Open Anyway*.
+
+Your programs are in `~/ASE Studio`, and the **Update** button inside the app downloads new versions of ASE Studio, of the simulator files and of gem5. To build the app yourself, see [utils/macOS/README.md](utils/macOS/README.md).
+
 ## Table of contest
 - [Architetture dei Sistemi di Elaborazione@Politecnico di Torino: SIMULATING A RISC-V CPU WITH GEM5](#architetture-dei-sistemi-di-elaborazionepolitecnico-di-torino-simulating-a-risc-v-cpu-with-gem5)
   - [Table of contest](#table-of-contest)
