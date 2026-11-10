@@ -6,12 +6,16 @@ export WORK_DIR="${SETUP_ROOT}"
 ###############################################
 #########   CROSS COMPILER RISCV  #############
 ###############################################
-export RISCV_TOOLCHAIN_PATH="${RISCV_TOOLCHAIN_PATH:-${WORK_DIR}/tools/riscv-toolchain/bin}"
+if [[ "$(uname -s)" == "Darwin" && -x "/opt/homebrew/bin/riscv64-elf-gcc" ]]; then
+    export RISCV_TOOLCHAIN_PATH="${RISCV_TOOLCHAIN_PATH:-/opt/homebrew/bin}"
+else
+    export RISCV_TOOLCHAIN_PATH="${RISCV_TOOLCHAIN_PATH:-${WORK_DIR}/tools/riscv-toolchain/bin}"
+fi
 if [[ -d "${RISCV_TOOLCHAIN_PATH}/bin" ]]; then
     export RISCV_TOOLCHAIN_PATH="${RISCV_TOOLCHAIN_PATH}/bin"
 fi
 RISCV_TOOL_PREFIX=""
-for prefix in riscv-none-elf riscv64-unknown-elf riscv32-unknown-elf riscv64-linux-gnu riscv32-linux-gnu; do
+for prefix in riscv-none-elf riscv64-unknown-elf riscv64-elf riscv32-unknown-elf riscv64-linux-gnu riscv32-linux-gnu; do
     if [[ -x "${RISCV_TOOLCHAIN_PATH}/${prefix}-gcc" && -x "${RISCV_TOOLCHAIN_PATH}/${prefix}-objdump" ]]; then
         RISCV_TOOL_PREFIX="${prefix}"
         break

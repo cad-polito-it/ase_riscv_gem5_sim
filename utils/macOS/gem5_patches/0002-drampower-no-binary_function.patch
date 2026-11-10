@@ -1,0 +1,19 @@
+ext: build drampower with recent libc++ (no std::binary_function)
+
+std::binary_function was removed in C++17 and recent libc++ (Apple clang
+21) no longer provides it. The comparator does not need the base class.
+
+diff --git a/ext/drampower/src/CmdScheduler.h b/ext/drampower/src/CmdScheduler.h
+index 58efd27..1497304 100644
+--- a/ext/drampower/src/CmdScheduler.h
++++ b/ext/drampower/src/CmdScheduler.h
+@@ -84,8 +84,7 @@ class cmdScheduler {
+     std::string  name;
+     physicalAddr PhysicalAddr;
+     // sorting the commands according to their scheduling time.
+-    struct commandItemSorter : public std::binary_function<commandItem&,
+-                                                           commandItem&, bool>{
++    struct commandItemSorter {
+       bool operator()(const commandItem& lhs,
+                       const commandItem& rhs) const
+       {
