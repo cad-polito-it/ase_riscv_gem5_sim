@@ -26,12 +26,10 @@ utils/macOS/build_gem5.sh                                                       
 ```
 
 `build_gem5.sh` downloads gem5 into `tools/gem5` (if missing), applies the
-patches in `gem5_patches/` and builds it. The patches are needed: on macOS
-`uint_fast16_t` is 16 bits wide, and without `0001` every floating-point
-operation of gem5 reads truncated operands (`1.5 * 2.0` gives NaN, see
-cad-polito-it/ase_riscv_gem5_sim#36). `0002` fixes the build with recent
-Apple clang. `build_app.py` refuses a `gem5.opt` that fails
-`gem5_selftest.py`.
+patches in `gem5_patches/` and builds it: `0002` fixes the build with recent
+Apple clang. The floating-point fix for macOS (#36) is in the course's gem5
+since cad-polito-it/gem5#9. `build_app.py` refuses a `gem5.opt` that fails
+`gem5_selftest.py`, which checks exactly that.
 
 ASE Studio is taken from the `ase_studio` submodule (its committed HEAD);
 `--studio-dir PATH` builds another checkout instead.
